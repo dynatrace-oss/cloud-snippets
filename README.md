@@ -1,23 +1,3 @@
-# New Project Template
-
-This repository contains a template that can be used to seed a repository for a
-new Dynatrace open source project.
-
-See our internal OSPO guides on SharePoint for more information about
-releasing a new Dynatrace open source project.
-
-This template uses the Apache license, as is Dynatrace's default.  See the
-documentation for instructions on using alternate license.
-
-## How to use this template
-
-1. Clone it from GitHub.
-    * There is no reason to fork it.
-1. Create a new local repository and copy the files from this repo into it.
-1. Modify README.md and docs/contributing.md to represent your project, not the
-   template project.
-1. Develop your new project!
-
 ## Source Code Headers
 
 Every file containing source code must include copyright and license
