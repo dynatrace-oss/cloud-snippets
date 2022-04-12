@@ -1,5 +1,20 @@
+# Copyright 2022 Dynatrace LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Role-based access for SaaS deployments with Environment ActiveGate
+Description: Role-based access for Managed and SaaS deployments with 
+  Environment ActiveGate
 Parameters:
   ActiveGateAccountID:
     Type: String
@@ -7,15 +22,19 @@ Parameters:
       instance
   ActiveGateRoleName:
     Type: String
-    Description: IAM role name for the account hosting the ActiveGate
-      for monitoring
+    Description: IAM role name for the account hosting the ActiveGate for 
+      monitoring. This must be the same name as the ActiveGateRoleName parameter
+      used in the template for the account hosting the ActiveGate.
     Default: Dynatrace_ActiveGate_role
   ExternalID:
     Type: String
-    Description: 'The External ID: Settings > Cloud and virtualization > AWS'
+    Description: External ID, copied from Settings > Cloud and virtualization > AWS
+      in Dynatrace
   RoleName:
     Type: String
-    Description: IAM role name that Dynatrace should use to get monitoring data
+    Description: IAM role name that Dynatrace should use to get monitoring data.
+      This must be the same name as the MonitoringRoleName parameter
+      used in the template for the account hosting the ActiveGate.
     Default: Dynatrace_monitoring_role
   PolicyName:
     Type: String
@@ -130,7 +149,7 @@ Resources:
             Principal:
               AWS:
                 - !Sub 'arn:aws:iam::${ActiveGateAccountID}:role/${ActiveGateRoleName}'
-                - '509560245411'
+                - '509560245411' # Dynatrace monitoring account ID
             Action: sts:AssumeRole
             Condition:
               StringEquals:
