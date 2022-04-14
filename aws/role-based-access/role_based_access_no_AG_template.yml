@@ -1,0 +1,151 @@
+# Copyright 2022 Dynatrace LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Role-based access for SaaS deployments without Environment ActiveGate
+Parameters:
+  ExternalID:
+    Type: String
+    Description: External ID, copied from Settings > Cloud and virtualization > AWS
+      in Dynatrace
+  RoleName:
+    Type: String
+    Description: IAM role name that Dynatrace should use to get monitoring data
+    Default: Dynatrace_monitoring_role
+  PolicyName:
+    Type: String
+    Description: IAM policy name attached to the role
+    Default: Dynatrace_monitoring_policy
+Resources:
+  DynatraceMonitoringPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Ref 'PolicyName'
+      Description: Dynatrace Monitoring Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: VisualEditor0
+            Effect: Allow
+            Action:
+              - acm-pca:ListCertificateAuthorities
+              - apigateway:GET
+              - apprunner:ListServices
+              - appstream:DescribeFleets
+              - appsync:ListGraphqlApis
+              - athena:ListWorkGroups
+              - autoscaling:DescribeAutoScalingGroups
+              - cloudformation:ListStackResources
+              - cloudfront:ListDistributions
+              - cloudhsm:DescribeClusters
+              - cloudsearch:DescribeDomains
+              - cloudwatch:GetMetricData
+              - cloudwatch:GetMetricStatistics
+              - cloudwatch:ListMetrics
+              - codebuild:ListProjects
+              - datasync:ListTasks
+              - dax:DescribeClusters
+              - directconnect:DescribeConnections
+              - dms:DescribeReplicationInstances
+              - dynamodb:ListTables
+              - dynamodb:ListTagsOfResource
+              - ec2:DescribeAvailabilityZones
+              - ec2:DescribeInstances
+              - ec2:DescribeNatGateways
+              - ec2:DescribeSpotFleetRequests
+              - ec2:DescribeTransitGateways
+              - ec2:DescribeVolumes
+              - ec2:DescribeVpnConnections
+              - ecs:ListClusters
+              - eks:ListClusters
+              - elasticache:DescribeCacheClusters
+              - elasticbeanstalk:DescribeEnvironmentResources
+              - elasticbeanstalk:DescribeEnvironments
+              - elasticfilesystem:DescribeFileSystems
+              - elasticloadbalancing:DescribeInstanceHealth
+              - elasticloadbalancing:DescribeListeners
+              - elasticloadbalancing:DescribeLoadBalancers
+              - elasticloadbalancing:DescribeRules
+              - elasticloadbalancing:DescribeTags
+              - elasticloadbalancing:DescribeTargetHealth
+              - elasticmapreduce:ListClusters
+              - elastictranscoder:ListPipelines
+              - es:ListDomainNames
+              - events:ListEventBuses
+              - firehose:ListDeliveryStreams
+              - fsx:DescribeFileSystems
+              - gamelift:ListFleets
+              - glue:GetJobs
+              - inspector:ListAssessmentTemplates
+              - kafka:ListClusters
+              - kinesis:ListStreams
+              - kinesisanalytics:ListApplications
+              - kinesisvideo:ListStreams
+              - lambda:ListFunctions
+              - lambda:ListTags
+              - lex:GetBots
+              - logs:DescribeLogGroups
+              - mediaconnect:ListFlows
+              - mediaconvert:DescribeEndpoints
+              - mediapackage-vod:ListPackagingConfigurations
+              - mediapackage:ListChannels
+              - mediatailor:ListPlaybackConfigurations
+              - opsworks:DescribeStacks
+              - qldb:ListLedgers
+              - rds:DescribeDBClusters
+              - rds:DescribeDBInstances
+              - rds:DescribeEvents
+              - rds:ListTagsForResource
+              - redshift:DescribeClusters
+              - robomaker:ListSimulationJobs
+              - route53:ListHostedZones
+              - route53resolver:ListResolverEndpoints
+              - s3:ListAllMyBuckets
+              - sagemaker:ListEndpoints
+              - sns:ListTopics
+              - sqs:ListQueues
+              - storagegateway:ListGateways
+              - sts:GetCallerIdentity
+              - swf:ListDomains
+              - tag:GetResources
+              - tag:GetTagKeys
+              - transfer:ListServers
+              - workmail:ListOrganizations
+              - workspaces:DescribeWorkspaces
+            Resource: '*'
+  DynatraceMonitoringRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref 'RoleName'
+      Description: Dynatrace Monitoring Role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: '509560245411' # Dynatrace monitoring account ID
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Ref 'ExternalID'
+      Path: /
+      ManagedPolicyArns:
+        - !Ref 'DynatraceMonitoringPolicy'
+Outputs:
+  RoleName:
+    Description: IAM role that Dynatrace should use to get monitoring data
+    Value: !Ref 'RoleName'
+  AccountID:
+    Description: Your Amazon account ID
+    Value: !Ref 'AWS::AccountId'
