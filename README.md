@@ -1,3 +1,13 @@
+# Cloud Snippets
+
+This is a repository to upload any code snippet or automation template related to cloud services.
+
+It contains small-scale complementary sources to assist with Dynatrace's integration.
+
+## Organization
+
+The contained files should be organized by the problem they are solving, so we can maintain a cleaner repository structure.
+
 ## Source Code Headers
 
 Every file containing source code must include copyright and license
@@ -5,7 +15,7 @@ information. This includes any JS/CSS files that you might be serving out to
 browsers. (This is to help well-intentioned people avoid accidental copying that
 doesn't comply with the license.)
 
-Apache header:
+### Apache header:
 
     Copyright 2022 Dynatrace LLC
 
@@ -20,3 +30,15 @@ Apache header:
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+## Contributing
+
+See [CONTRIBUTING](CONTRIBUTING.md) for details on submitting changes.
+
+## Code of Conduct
+
+See [CODE OF CONDUCT](CODE_OF_CONDUCT.md) for details.
+
+## License
+
+`cloud-snippets` is under Apache 2.0 license. See [LICENSE](LICENSE) for details.
