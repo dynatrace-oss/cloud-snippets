@@ -24,14 +24,11 @@ Parameters:
     Default: Dynatrace_ActiveGate_role
   AssumePolicyName:
     Type: String
-    Description: IAM policy name attached to the role for the account hosting the
-      ActiveGate
+    Description: IAM policy name attached to the role for the account hosting the ActiveGate
     Default: Dynatrace_assume_policy
   MonitoringRoleName:
     Type: String
-    Description: IAM role name that Dynatrace should use to get monitoring data. This
-      must be the same name as the RoleName parameter used in the template for the 
-      monitored account.
+    Description: IAM role name that Dynatrace should use to get monitoring data. This must be the same name as the RoleName parameter used in the template for the monitored account.
     Default: Dynatrace_monitoring_role
   MonitoredAccountID:
     Type: String
