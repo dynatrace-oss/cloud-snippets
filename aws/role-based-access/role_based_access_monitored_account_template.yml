@@ -22,9 +22,7 @@ Parameters:
       instance
   ActiveGateRoleName:
     Type: String
-    Description: IAM role name for the account hosting the ActiveGate for 
-      monitoring. This must be the same name as the ActiveGateRoleName parameter
-      used in the template for the account hosting the ActiveGate.
+    Description: IAM role name for the account hosting the ActiveGate for monitoring. This must be the same name as the ActiveGateRoleName parameter used in the template for the account hosting the ActiveGate.
     Default: Dynatrace_ActiveGate_role
   ExternalID:
     Type: String
@@ -32,9 +30,7 @@ Parameters:
       in Dynatrace
   RoleName:
     Type: String
-    Description: IAM role name that Dynatrace should use to get monitoring data.
-      This must be the same name as the MonitoringRoleName parameter
-      used in the template for the account hosting the ActiveGate.
+    Description: IAM role name that Dynatrace should use to get monitoring data. This must be the same name as the MonitoringRoleName parameter used in the template for the account hosting the ActiveGate.
     Default: Dynatrace_monitoring_role
   PolicyName:
     Type: String
