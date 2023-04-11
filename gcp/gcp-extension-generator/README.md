@@ -34,8 +34,8 @@ https://www.dynatrace.com/support/help/extend-dynatrace/extensions20/sign-extens
 
 ### Usage
 ```
-DEVELOPER_KEY=..PATH-TO-DEVELOPER-KEY..key
-DEVELOPER_PEM=..PATH-TO-DEVELOPER-PEM..pem
+export DEVELOPER_KEY=..PATH-TO-DEVELOPER-KEY..key
+export DEVELOPER_PEM=..PATH-TO-DEVELOPER-PEM..pem
 gcp-extension-generator.sh
 ```
 
