@@ -89,7 +89,7 @@ cat ./tmp/metricDescriptors.json  | jq '  .metricDescriptors[] |  select(has("me
                     metricKind: .metricKind, 
                     unit: (.unit // "Unspecified")
                 },          
-              dimensions:  (  try  [.labels?[]? | { key:.key, value:.key}] catch "")
+              dimensions:  (  try  [.labels?[]? | { key:.key, value: ("label:metric.labels." + .key)}] catch "")
               }
         
     }' | jq -s 'group_by(.service) | map(
@@ -124,7 +124,7 @@ jq -s '[
                 {
                     "service": .gcp[0].service,
                     "featureSet": "default_metrics",
-                    "dimensions": $d.labels | [( .[] | {key: .key, value: .key} )],
+                    "dimensions": $d.labels | [( .[] | {key: .key, value: ("label:resource.labels." + .key ) } )],
                     "metrics": .gcp[0].metrics
                 }
             ]
