@@ -94,7 +94,7 @@ cat ./tmp/metricDescriptors.json  | jq '  .metricDescriptors[] |  select(has("me
         
     }' | jq -s 'group_by(.service) | map(
         {   
-            name: ("custom:dynatrace.extension.google-" + (.[0].service | gsub("_";"-") | gsub("\\.";"_") | gsub("\\/";"_") | ascii_downcase)),
+            name: ("custom:com.dynatrace.extension.google-" + (.[0].service | gsub("_";"-") | gsub("\\.";"_") | gsub("\\/";"_") | ascii_downcase)),
             version: "1.0.0",
             minDynatraceVersion: "1.250",
             author: {
@@ -123,6 +123,7 @@ jq -s '[
     "gcp": [
                 {
                     "service": .gcp[0].service,
+                    "featureSet": "default_metrics",
                     "dimensions": $d.labels | [( .[] | {key: .key, value: .key} )],
                     "metrics": .gcp[0].metrics
                 }
