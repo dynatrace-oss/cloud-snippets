@@ -1,0 +1,141 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.5.6.12127",
+      "templateHash": "10602523904429381366"
+    }
+  },
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "defaultValue": "[format('webApp-{0}', uniqueString(resourceGroup().id))]",
+      "minLength": 2,
+      "metadata": {
+        "description": "Web app name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "B1",
+      "metadata": {
+        "description": "The SKU of App Service Plan."
+      }
+    },
+    "linuxFxVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Runtime stack of current web app"
+      }
+    }
+  },
+  "variables": {
+    "appServicePlanPortalName": "[concat('mjarzemb-', format('AppServicePlan-{0}', parameters('webAppName')))]",
+    "runtimeToStartupCommand": {
+        "node": {
+        "appCommandLine": "npx express-generator -f && npm i && npm start"
+        },
+        "dotnetcore": {
+        "appCommandLine": "dotnet new webapp -o . && dotnet run"
+    },
+            "php": {
+        "appCommandLine": "wget -qO- https://github.com/Azure-Samples/php-docs-hello-world/archive/refs/tags/91914.tar.gz | tar -xzv --strip-components=1 && php -S localhost:8080"
+    },
+            "python": {
+        "appCommandLine": "wget  -qO- https://github.com/Azure-Samples/msdocs-python-flask-webapp-quickstart/tarball/main | tar -xzv --strip-components=1 && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && flask run"
+    },
+        "ruby": {
+        "appCommandLine": "wget -qO- https://github.com/Azure-Samples/ruby-docs-hello-world/tarball/master | tar -xzv --strip-components=1 && bundle install && bundle exec rails server"
+        }
+  },
+  "runtimeNoVersion": "[variables('runtimeToStartupCommand')[runtime.justRuntime(parameters('linuxFxVersion'))]]",
+  "appCommandLine": "[variables('runtimeNoVersion')['appCommandLine']]"
+
+
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-02-01",
+      "name": "[variables('appServicePlanPortalName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "kind": "linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('webAppName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "httpsOnly": true,
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "[parameters('linuxFxVersion')]",
+          "appCommandLine": "[variables('appCommandLine')]",
+
+          "minTlsVersion": "1.2",
+          "ftpsState": "FtpsOnly"
+        }
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]"
+      ]
+     }
+    //  ,
+    // {
+    //   "condition": "[contains(parameters('repoUrl'), 'http')]",
+    //   "type": "Microsoft.Web/sites/sourcecontrols",
+    //   "apiVersion": "2021-02-01",
+    //   "name": "[format('{0}/{1}', parameters('webAppName'), 'web')]",
+    //   "properties": {
+    //     "repoUrl": "[parameters('repoUrl')]",
+    //     "branch": "main",
+    //     "isManualIntegration": true
+    //   },
+    //   "dependsOn": [
+    //     "[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"
+    //   ]
+    // }
+  ],
+    "outputs": {
+        "appServiceEndpoint": {
+            "type": "string",
+            "value": "[concat('https://', reference(parameters('webAppName')).defaultHostName)]"
+        }
+      },
+      "functions": [{
+"namespace": "runtime",
+    "members": {
+            "justRuntime": {
+                "parameters": [
+                {
+                    "name": "linuxFxVersion",
+                    "type": "string"
+                }
+                ],
+                "output": {
+                    "type": "string",
+                    "value": "[tolower(split(parameters('linuxFxVersion'), '|')[0])]"
+                }
+            }
+            }
+      }]
+}
