@@ -36,10 +36,43 @@
       "metadata": {
         "description": "The Runtime stack of current web app"
       }
+    },
+    "appServicePlanPortalName": {
+        "type": "string",
+        "defaultValue": "[format('AppServicePlan-{0}', parameters('webAppName'))]",
+        "metadata": {
+          "description": "App service plan name"
+      }
+    },
+      "DT_API_TOKEN": {
+        "type": "secureString",
+        "metadata": {
+          "description": "Dynatrace API Token"
+        }
+      },
+      "DT_ENDPOINT": {
+        "type": "secureString",
+        "metadata": {
+          "description": "Dynatrace Endpoint URL"
+        }
+      },
+      "DT_INCLUDE": {
+        "type": "string",
+        "allowedValues": ["all", "java", "apache", "nginx", "nodejs", "dotnet", "php", "go", "sdk"],
+        "metadata": {
+          "description": "Dynatrace Include Option"
+        }
+      },
+        "START_APP_CMD": {
+        "type": "string",
+          "metadata": {
+            "description": "Startup Command for the App"
+      }
+
     }
   },
   "variables": {
-    "appServicePlanPortalName": "[concat('mjarzemb-', format('AppServicePlan-{0}', parameters('webAppName')))]",
+    // "appServicePlanPortalName": "[concat('mjarzemb-', format('AppServicePlan-{0}', parameters('webAppName')))]",
     "runtimeToStartupCommand": {
         "node": {
         "appCommandLine": "npx express-generator -f && npm i && npm start"
@@ -65,8 +98,8 @@
   "resources": [
     {
       "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2021-02-01",
-      "name": "[variables('appServicePlanPortalName')]",
+      "apiVersion": "2022-03-01",
+      "name": "[parameters('appServicePlanPortalName')]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "[parameters('sku')]"
@@ -78,15 +111,15 @@
     },
     {
       "type": "Microsoft.Web/sites",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2022-03-01",
       "name": "[parameters('webAppName')]",
       "location": "[parameters('location')]",
       "properties": {
         "httpsOnly": true,
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanPortalName'))]",
         "siteConfig": {
           "linuxFxVersion": "[parameters('linuxFxVersion')]",
-          "appCommandLine": "[variables('appCommandLine')]",
+          "appCommandLine": "[concat('wget -O /tmp/installer-wrapper.sh https://mjarzemb.blob.core.windows.net/mjarzemb-public/oneagent_installer.sh &&', ' sh /tmp/installer-wrapper.sh')]",
 
           "minTlsVersion": "1.2",
           "ftpsState": "FtpsOnly"
@@ -96,14 +129,33 @@
         "type": "SystemAssigned"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanPortalName'))]"
+      ],
+      "resources": [
+              {
+        "type": "Microsoft.Web/sites/config",
+        "apiVersion": "2022-03-01",
+        "name": "[concat(parameters('webAppName'), '/config')]",
+        "dependsOn": [
+            "[concat('Microsoft.Web/sites/', parameters('webAppName'))]"
+        ],
+
+        "properties": {
+          // "DT_API_TOKEN": "[parameters('DT_API_TOKEN')]",
+          // "DT_ENDPOINT": "[parameters('DT_ENDPOINT')]",
+          // "DT_INCLUDE": "[parameters('DT_INCLUDE')]",
+          // "START_APP_CMD": "[parameters('START_APP_CMD')]"
+          "test": "hej"
+        }
+      }
       ]
      }
+  ],
     //  ,
     // {
     //   "condition": "[contains(parameters('repoUrl'), 'http')]",
     //   "type": "Microsoft.Web/sites/sourcecontrols",
-    //   "apiVersion": "2021-02-01",
+    //   "apiVersion": "2022-03-01",
     //   "name": "[format('{0}/{1}', parameters('webAppName'), 'web')]",
     //   "properties": {
     //     "repoUrl": "[parameters('repoUrl')]",
@@ -114,7 +166,6 @@
     //     "[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"
     //   ]
     // }
-  ],
     "outputs": {
         "appServiceEndpoint": {
             "type": "string",
