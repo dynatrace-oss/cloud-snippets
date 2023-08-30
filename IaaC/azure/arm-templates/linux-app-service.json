@@ -37,7 +37,7 @@
         "description": "The Runtime stack of current web app"
       }
     },
-    "appServicePlanPortalName": {
+    "appServicePlanName": {
         "type": "string",
         "defaultValue": "[format('AppServicePlan-{0}', parameters('webAppName'))]",
         "metadata": {
@@ -63,35 +63,51 @@
           "description": "Dynatrace Include Option"
         }
       },
-        "START_APP_CMD": {
-        "type": "string",
-          "metadata": {
-            "description": "Startup Command for the App"
-      }
-
+    //   "START_APP_CMD": {
+    //     "type": "string",
+    //     // default values for START_APP_CMD should always work - if you want to change it, you're on your own ;)
+    //     "defaultValue": "[variables('startupCommand')]",
+    //       "metadata": {
+    //         "description": "Startup Command for the App"
+    //   }
+    // },
+    "PYTHON_WEB_RUNTIME": {
+      "type": "string",
+      "defaultValue": "N/A",
+      "allowedValues": ["flask", "django", "N/A"]
     }
   },
   "variables": {
-    // "appServicePlanPortalName": "[concat('mjarzemb-', format('AppServicePlan-{0}', parameters('webAppName')))]",
     "runtimeToStartupCommand": {
-        "node": {
-        "appCommandLine": "npx express-generator -f && npm i && npm start"
-        },
-        "dotnetcore": {
-        "appCommandLine": "dotnet new webapp -o . && dotnet run"
-    },
-            "php": {
-        "appCommandLine": "wget -qO- https://github.com/Azure-Samples/php-docs-hello-world/archive/refs/tags/91914.tar.gz | tar -xzv --strip-components=1 && php -S localhost:8080"
-    },
-            "python": {
-        "appCommandLine": "wget  -qO- https://github.com/Azure-Samples/msdocs-python-flask-webapp-quickstart/tarball/main | tar -xzv --strip-components=1 && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && flask run"
-    },
-        "ruby": {
-        "appCommandLine": "wget -qO- https://github.com/Azure-Samples/ruby-docs-hello-world/tarball/master | tar -xzv --strip-components=1 && bundle install && bundle exec rails server"
+        "node": "npm start",
+        "dotnetcore": "dotnet dotnet-sample.dll",
+        "php": "php -S localhost:8080",
+        "java": "java -jar /home/site/wwwroot/app.jar --server.port=80",
+        "python": {
+          "django": "gunicorn --bind=0.0.0.0 --timeout 600 --workers=4 --chdir quickstartproject quickstartproject.wsgi",
+          "flask": "gunicorn --bind=0.0.0.0 --timeout 600 app:app"
         }
+
+
   },
-  "runtimeNoVersion": "[variables('runtimeToStartupCommand')[runtime.justRuntime(parameters('linuxFxVersion'))]]",
-  "appCommandLine": "[variables('runtimeNoVersion')['appCommandLine']]"
+    "runtimeNoVersion": "[runtime.justRuntime(parameters('linuxFxVersion'))]",
+    "runtimeIsPython": "[equals(variables('runtimeNoVersion'), 'python')]",
+    // assigning startupCommand differs if the runtime was python
+    "startupCommand": "[if(variables('runtimeIsPython'),
+                        variables('runtimeToStartupCommand')[variables('runtimeNoVersion')][parameters('PYTHON_WEB_RUNTIME')],
+                        variables('runtimeToStartupCommand')[variables('runtimeNoVersion')])]",
+
+    // needed only for Python zip deployments
+    "SCM_DO_BUILD_DURING_DEPLOYMENT": "[string(variables('runtimeIsPython'))]",
+
+    "installerWrapper": {
+      "installationPath": "/tmp/installer-wrapper.sh",
+      "URL": "https://mjarzemb.blob.core.windows.net/mjarzemb-public/oneagent_installer.sh",
+      "runCommand": "sh /tmp/installer-wrapper.sh"
+    },
+    // this downloads and runs the installer wrapper script inside which thesh /tmp START_APP_CMD is used to run the actual application proccess
+    "appCommandLine": "[concat('wget -O ', variables('installerWrapper').installationPath, ' ', variables('installerWrapper').URL, ' && ', variables('installerWrapper').runCommand)]"
+    // "appCommandLine": "[concat(variables('installAndRunDT'), ' && ', variables('startupCommand'))]"
 
 
   },
@@ -99,7 +115,7 @@
     {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2022-03-01",
-      "name": "[parameters('appServicePlanPortalName')]",
+      "name": "[parameters('appServicePlanName')]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "[parameters('sku')]"
@@ -116,11 +132,10 @@
       "location": "[parameters('location')]",
       "properties": {
         "httpsOnly": true,
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanPortalName'))]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
         "siteConfig": {
           "linuxFxVersion": "[parameters('linuxFxVersion')]",
-          "appCommandLine": "[concat('wget -O /tmp/installer-wrapper.sh https://mjarzemb.blob.core.windows.net/mjarzemb-public/oneagent_installer.sh &&', ' sh /tmp/installer-wrapper.sh')]",
-
+          "appCommandLine": "[variables('appCommandLine')]",
           "minTlsVersion": "1.2",
           "ftpsState": "FtpsOnly"
         }
@@ -129,43 +144,29 @@
         "type": "SystemAssigned"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanPortalName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
       ],
       "resources": [
-              {
-        "type": "Microsoft.Web/sites/config",
-        "apiVersion": "2022-03-01",
-        "name": "[concat(parameters('webAppName'), '/config')]",
-        "dependsOn": [
-            "[concat('Microsoft.Web/sites/', parameters('webAppName'))]"
-        ],
+        {
+          "type": "config",
+          "apiVersion": "2022-03-01",
+          "name": "appsettings",
+          "dependsOn": [
+              "[resourceId('Microsoft.Web/sites/', parameters('webAppName'))]"
+          ],
 
-        "properties": {
-          // "DT_API_TOKEN": "[parameters('DT_API_TOKEN')]",
-          // "DT_ENDPOINT": "[parameters('DT_ENDPOINT')]",
-          // "DT_INCLUDE": "[parameters('DT_INCLUDE')]",
-          // "START_APP_CMD": "[parameters('START_APP_CMD')]"
-          "test": "hej"
-        }
+          "properties": {
+            "DT_API_TOKEN": "[parameters('DT_API_TOKEN')]",
+            "DT_ENDPOINT": "[parameters('DT_ENDPOINT')]",
+            "DT_INCLUDE": "[parameters('DT_INCLUDE')]",
+            // "START_APP_CMD": "[parameters('START_APP_CMD')]",
+            "START_APP_CMD": "[variables('startupCommand')]",
+            "SCM_DO_BUILD_DURING_DEPLOYMENT": "[variables('SCM_DO_BUILD_DURING_DEPLOYMENT')]"
+          }
       }
       ]
      }
   ],
-    //  ,
-    // {
-    //   "condition": "[contains(parameters('repoUrl'), 'http')]",
-    //   "type": "Microsoft.Web/sites/sourcecontrols",
-    //   "apiVersion": "2022-03-01",
-    //   "name": "[format('{0}/{1}', parameters('webAppName'), 'web')]",
-    //   "properties": {
-    //     "repoUrl": "[parameters('repoUrl')]",
-    //     "branch": "main",
-    //     "isManualIntegration": true
-    //   },
-    //   "dependsOn": [
-    //     "[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"
-    //   ]
-    // }
     "outputs": {
         "appServiceEndpoint": {
             "type": "string",
