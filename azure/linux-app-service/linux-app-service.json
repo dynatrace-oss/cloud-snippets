@@ -1,0 +1,183 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.5.6.12127",
+      "templateHash": "10602523904429381366",
+      "author": "mateusz.jarzembinski@dynatrace.com"
+    }
+  },
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "defaultValue": "[format('webApp-{0}', uniqueString(resourceGroup().id))]",
+      "minLength": 2,
+      "metadata": {
+        "description": "Web app name."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "B1",
+      "metadata": {
+        "description": "The SKU of App Service Plan."
+      }
+    },
+    "linuxFxVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Runtime stack of current web app.",
+        "comments": "The syntax for java is JAVA|<version>-java<version> eg. JAVA|17-java17"
+      }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "defaultValue": "[format('AppServicePlan-{0}', parameters('webAppName'))]",
+      "metadata": {
+        "description": "App service plan name"
+      }
+    },
+    "DT_API_TOKEN": {
+      "type": "secureString",
+      "metadata": {
+        "description": "Dynatrace API Token"
+      }
+    },
+    "DT_ENDPOINT": {
+      "type": "secureString",
+      "metadata": {
+        "description": "Dynatrace Endpoint URL"
+      }
+    },
+    "DT_INCLUDE": {
+      "type": "array",
+      "metadata": {
+        "description": "Dynatrace Include Option",
+        "comments": "Allowed values are: all, java, apache, nginx, nodejs, dotnet, php, go, sdk"
+      }
+    }
+  },
+  "variables": {
+    "runtimeToStartupCommand": {
+      "node": "npm start",
+      "dotnetcore": "dotnet dotnet-sample.dll",
+      "php": "php -S localhost:8080",
+      "java": "java -jar /home/site/wwwroot/app.jar --server.port=80"
+      // the jar file will be renamed to app.jar during deployment
+      // ref: https://learn.microsoft.com/en-us/azure/app-service/configure-language-java?pivots=platform-linux#java-se
+    },
+
+    "installerWrapper": {
+      "installationPath": "/tmp/installer-wrapper.sh",
+      "URL": "https://mjarzemb.blob.core.windows.net/mjarzemb-public/oneagent_installer.sh",
+      "runCommand": "sh /tmp/installer-wrapper.sh"
+    },
+
+    // inside the installer wrapper script the START_APP_CMD variable is used to run the actual application process
+    "downloadAndRunInstallerWrapper": "[concat('wget -O ', variables('installerWrapper').installationPath, ' ', variables('installerWrapper').URL, ' && ', variables('installerWrapper').runCommand)]",
+    "runtimeStackName": "[parse.getJustRuntime(parameters('linuxFxVersion'))]",
+    "START_APP_CMD": "[variables('runtimeToStartupCommand')[variables('runtimeStackName')]]",
+
+    // assigning appCommandLine (the startup command/file) differs if the parse is java
+    "appCommandLine": "[if(equals(variables('runtimeStackName'), 'java'), 'sh /home/site/wwwroot/java_startup.sh', variables('downloadAndRunInstallerWrapper'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-03-01",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "kind": "linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-03-01",
+      "name": "[parameters('webAppName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "httpsOnly": true,
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "[parameters('linuxFxVersion')]",
+          "appCommandLine": "[variables('appCommandLine')]",
+          "minTlsVersion": "1.2",
+          "ftpsState": "FtpsOnly"
+        }
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "resources": [
+        {
+          "type": "config",
+          "apiVersion": "2022-03-01",
+          "name": "appsettings",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', parameters('webAppName'))]"
+          ],
+          "properties": {
+            "DT_API_TOKEN": "[parameters('DT_API_TOKEN')]",
+            "DT_ENDPOINT": "[parameters('DT_ENDPOINT')]",
+            "DT_INCLUDE": "[parse.buildDtIncludeQuery(parameters('DT_INCLUDE'))]",
+            "START_APP_CMD": "[variables('START_APP_CMD')]"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "appServiceEndpoint": {
+      "type": "string",
+      "value": "[concat('https://', reference(parameters('webAppName')).defaultHostName)]"
+    }
+  },
+  "functions": [
+    {
+      "namespace": "parse",
+      "members": {
+        "getJustRuntime": {
+          "parameters": [
+            {
+              "name": "linuxFxVersion",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[tolower(split(parameters('linuxFxVersion'), '|')[0])]"
+          }
+        },
+        "buildDtIncludeQuery": {
+          "parameters": [
+            {
+              "name": "DT_INCLUDE",
+              "type": "array"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[toLower(join(parameters('DT_INCLUDE'), '&include='))]"
+          }
+        }
+      }
+    }
+  ]
+}
