@@ -78,7 +78,7 @@
 
     "installerWrapper": {
       "installationPath": "/tmp/installer-wrapper.sh",
-      "URL": "https://mjarzemb.blob.core.windows.net/mjarzemb-public/oneagent_installer.sh",
+      "URL": "https://mjarzemb.blob.core.windows.net/mjarzemb-public/oneagent-installer.sh",
       "runCommand": "sh /tmp/installer-wrapper.sh"
     },
 
@@ -87,7 +87,7 @@
     "runtimeStackName": "[parse.getJustRuntime(parameters('linuxFxVersion'))]",
     "START_APP_CMD": "[variables('runtimeToStartupCommand')[variables('runtimeStackName')]]",
 
-    // assigning appCommandLine (the startup command/file) differs if the parse is java
+    // assigning appCommandLine (the startup command/file) differs if the runtime is java
     "appCommandLine": "[if(equals(variables('runtimeStackName'), 'java'), 'sh /home/site/wwwroot/java_startup.sh', variables('downloadAndRunInstallerWrapper'))]"
   },
   "resources": [
