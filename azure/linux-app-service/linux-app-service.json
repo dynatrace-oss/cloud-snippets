@@ -70,7 +70,6 @@
     "runtimeToStartupCommand": {
       "node": "npm start",
       "dotnetcore": "dotnet dotnet-sample.dll",
-      "php": "php -S localhost:8080",
       "java": "java -jar /home/site/wwwroot/app.jar --server.port=80"
       // the jar file will be renamed to app.jar during deployment
       // ref: https://learn.microsoft.com/en-us/azure/app-service/configure-language-java?pivots=platform-linux#java-se
