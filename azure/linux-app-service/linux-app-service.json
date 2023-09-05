@@ -64,6 +64,13 @@
         "description": "Dynatrace Include Option",
         "comments": "Allowed values are: all, java, apache, nginx, nodejs, dotnet, php, go, sdk"
       }
+    },
+    "START_APP_CMD": {
+      "type": "string",
+      "defaultValue": "null",
+      "metadata": {
+        "description": "Command to start your application"
+      }
     }
   },
   "variables": {
@@ -84,10 +91,11 @@
     // inside the installer wrapper script the START_APP_CMD variable is used to run the actual application process
     "downloadAndRunInstallerWrapper": "[concat('wget -O ', variables('installerWrapper').installationPath, ' ', variables('installerWrapper').URL, ' && ', variables('installerWrapper').runCommand)]",
     "runtimeStackName": "[parse.getJustRuntime(parameters('linuxFxVersion'))]",
-    "START_APP_CMD": "[variables('runtimeToStartupCommand')[variables('runtimeStackName')]]",
+    "DEFAULT_START_APP_CMD": "[variables('runtimeToStartupCommand')[variables('runtimeStackName')]]",
+    "START_APP_CMD": "[if(equals(parameters('START_APP_CMD'), 'null'), variables('DEFAULT_START_APP_CMD'), parameters('START_APP_CMD'))]",
 
     // assigning appCommandLine (the startup command/file) differs if the runtime is java
-    "appCommandLine": "[if(equals(variables('runtimeStackName'), 'java'), 'sh /home/site/wwwroot/java_startup.sh', variables('downloadAndRunInstallerWrapper'))]"
+    "appCommandLine": "[if(equals(variables('runtimeStackName'), 'java'), 'sh /home/site/wwwroot/java-startup.sh', variables('downloadAndRunInstallerWrapper'))]"
   },
   "resources": [
     {
