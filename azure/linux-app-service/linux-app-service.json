@@ -69,7 +69,8 @@
       "type": "string",
       "defaultValue": "null",
       "metadata": {
-        "description": "Command to start your application"
+        "description": "Command to start your application",
+        "comments": "Setting this value is not necessary, the defualt value depends on used runtime and you can found it in the 'runtimeToStartupCommand' object, in the variables section."
       }
     }
   },
