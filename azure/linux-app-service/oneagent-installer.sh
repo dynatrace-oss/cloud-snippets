@@ -11,11 +11,11 @@ readonly INSTALLER_URL_SUFFIX="api/v1/deployment/installer/agent/unix/paas-sh/la
 # Try using ldd command
 check_ldd() {
 
-    ldd_result=$(ldd --version)
+    ldd_result=$(ldd /bin/echo)
     readonly ldd_result
 
     if echo "$ldd_result" | grep -qi "$LIB_MUSL"; then
-        lib="$LIB_$LIB_MUSL"
+        lib="$LIB_MUSL"
     elif echo "$ldd_result" | grep -qi "$LIB_GCLIB"; then
         lib="$LIB_DEFAULT"
     fi
