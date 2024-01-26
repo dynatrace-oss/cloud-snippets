@@ -8,13 +8,13 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
 }
 
 resource "aws_iam_role" "ActiveGate_role" {
-  name               = var.ActiveGate_role_name
-  path               = "/"
-  assume_role_policy = data.aws_iam_policy_document.ActiveGate_role_assume_role_policy_document.json
+  name                = var.ActiveGate_role_name
+  path                = "/"
+  assume_role_policy  = data.aws_iam_policy_document.ActiveGate_role_assume_role_policy_document.json
   managed_policy_arns = [aws_iam_policy.Dynatrace_assume_policy.arn]
 }
 
@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "ActiveGate_role_assume_role_policy_document" {
 }
 
 resource "aws_iam_policy" "Dynatrace_assume_policy" {
-  name = var.assume_policy_name
+  name   = var.assume_policy_name
   policy = data.aws_iam_policy_document.Dynatrace_assume_policy_document.json
 }
 
