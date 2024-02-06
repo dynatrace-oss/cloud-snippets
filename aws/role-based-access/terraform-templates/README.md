@@ -43,10 +43,10 @@ terraform apply -var-file="my_variables.tfvars"
 
 ### Role-based access for SaaS deployments with Environment ActiveGate
 
-You can use [dynatrace_monitoring_role](./dynatrace_monitoring_role/) module as well. This time adding two additional arguments:
+You can use [dynatrace_monitoring_role](./dynatrace_monitoring_role/) module as well. This time, adding two additional arguments:
 
 * `active_gate_account_id`: The ID of the account hosting the ActiveGate instance
-* `active_gate_role_name`: IAM role name for the account hosting the ActiveGate for monitoring. This must be the same name as the ActiveGate_role_name parameter used in the template for the account hosting the ActiveGate.
+* `active_gate_role_name`: IAM role name for the account hosting the ActiveGate for monitoring. This role name must be the same name as the ActiveGate_role_name parameter used in the template for the account hosting the ActiveGate.
 
 Now you can prepare a `.tfvars` file with the following arguments:
 ```hcl
@@ -67,10 +67,10 @@ terraform apply -var-file="my_variables.tfvars"
 ### Role-based access for Managed and SaaS deployments with Environment ActiveGate
 
 You can use [activegate_monitoring_role](./activegate_monitoring_role/) module. You need to specify the following arguments:
-* `region`: The region where policy will be created
-* `active_gate_role_name`: IAM role name for the account hosting the ActiveGate for monitoring. This must be the same name as the ActiveGate_role_name parameter used in the template for the monitored account.
+* `region`: The region where the policy will be created
+* `active_gate_role_name`: IAM role name for the account hosting the ActiveGate for monitoring. This role name must be the same name as the ActiveGate_role_name parameter used in the template for the monitored account.
 * `assume_policy_name`:  IAM policy name attached to the role for the account hosting the ActiveGate
-* `monitoring_role_name`: IAM role name that Dynatrace should use to get monitoring data. This must be the same name as the RoleName parameter used in the template for the monitored account.
+* `monitoring_role_name`: IAM role name that Dynatrace should use to get monitoring data. This role must be the same name as the RoleName parameter used in the template for the monitored account.
 * `monitored_account_id`: ID of the account that Dynatrace should monitor
 
 Now you can prepare a `.tfvars` file with the following arguments:
