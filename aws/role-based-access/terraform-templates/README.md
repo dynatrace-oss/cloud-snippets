@@ -1,11 +1,11 @@
 # Configuring AWS role based access with Terraform
 
-This folder contains two Terraform modules that can be used to configure the role based access for Dynatrace Managed and SaaS deployments.
+This folder contains two Terraform modules that allow you to configure AWS monitoring policy and role-based authentication. This will provide access to Amazon CloudWatch metrics from Dynatrace. The modules can be used with either a Dynatrace Saas deployment with Environment ActiveGate or a Dynatrace Managed Server. Additionally, it enables role-based access with either an Environment ActiveGate or a Dynatrace Managed Server.
 
-* dynatrace_monitoring_role: Role-based access for Managed and SaaS deployments with or without Environment ActiveGate
-* activegate_monitoring_role: Role-based access for Managed and SaaS deployments with Environment ActiveGate
+* [dynatrace_monitoring_role](./dynatrace_monitoring_role/): This modules configures role-based access for Managed and SaaS deployments with or without Environment ActiveGate
+* [activegate_monitoring_role](./activegate_monitoring_role/): Role-based access for Managed and SaaS deployments with Environment ActiveGate
 
-Both modules are a translation from CloudFormation templates available in this repository with a difference: `dynatrace_monitoring_role` module consolidates [role_based_access_monitored_account_template.yml](/aws/role-based-access/role_based_access_monitored_account_template.yml) and [role_based_access_no_AG_template.yml](/aws/role-based-access/role_based_access_no_AG_template.yml). Later in this README it's explained how to use the Terraform modules.
+Both modules are a translation from the CloudFormation templates available in this repository, but `dynatrace_monitoring_role` module consolidates [role_based_access_monitored_account_template.yml](/aws/role-based-access/role_based_access_monitored_account_template.yml) and [role_based_access_no_AG_template.yml](/aws/role-based-access/role_based_access_no_AG_template.yml).
 
 ## How to use the Terraform templates
 
