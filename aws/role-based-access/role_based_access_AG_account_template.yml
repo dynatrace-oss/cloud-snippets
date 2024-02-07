@@ -1,17 +1,37 @@
+# Copyright 2022 Dynatrace LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Role-based access for Managed and SaaS deployments with Environment ActiveGate
+Description: Role-based access for Managed and SaaS deployments with 
+  Environment ActiveGate
 Parameters:
   ActiveGateRoleName:
     Type: String
-    Description: IAM role name for the account hosting the ActiveGate for monitoring. This must be the same name as the ActiveGateRoleName parameter used in the template for the monitored account.
+    Description: IAM role name for the account hosting the ActiveGate for
+      monitoring. This must be the same name as the ActiveGateRoleName parameter 
+      used in the template for the monitored account.
     Default: Dynatrace_ActiveGate_role
   AssumePolicyName:
     Type: String
-    Description: IAM policy name attached to the role for the account hosting the ActiveGate
+    Description: IAM policy name attached to the role for the account hosting the
+      ActiveGate
     Default: Dynatrace_assume_policy
   MonitoringRoleName:
     Type: String
-    Description: IAM role name that Dynatrace should use to get monitoring data. This must be the same name as the RoleName parameter used in the template for the monitored account.
+    Description: IAM role name that Dynatrace should use to get monitoring data. This
+      must be the same name as the RoleName parameter used in the template for the 
+      monitored account.
     Default: Dynatrace_monitoring_role
   MonitoredAccountID:
     Type: String
@@ -20,20 +40,20 @@ Resources:
   DynatraceAssumePolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: !Ref AssumePolicyName
+      ManagedPolicyName: !Ref 'AssumePolicyName'
       Description: Dynatrace Assume Policy
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
           - Resource:
-              - !Sub arn:aws:iam::${MonitoredAccountID}:role/${MonitoringRoleName}
+              - !Sub 'arn:aws:iam::${MonitoredAccountID}:role/${MonitoringRoleName}'
             Action:
               - sts:AssumeRole
             Effect: Allow
   DynatraceActiveGateRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref ActiveGateRoleName
+      RoleName: !Ref 'ActiveGateRoleName'
       Description: Dynatrace ActiveGate Role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -46,23 +66,23 @@ Resources:
               - sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-        - !Ref DynatraceAssumePolicy
-  DynatraceActiveGateInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
+        - !Ref 'DynatraceAssumePolicy'
+  DynatraceActiveGateInstanceProfile: 
+    Type: "AWS::IAM::InstanceProfile"
     Properties:
-      InstanceProfileName: !Ref ActiveGateRoleName
-      Roles:
-        - !Ref DynatraceActiveGateRole
+      InstanceProfileName: !Ref 'ActiveGateRoleName'
+      Roles: 
+        - Ref: 'DynatraceActiveGateRole'
 Outputs:
   ActiveGateRoleName:
     Description: IAM role name for the account hosting the ActiveGate
-    Value: !Ref ActiveGateRoleName
+    Value: !Ref 'ActiveGateRoleName'
   ActiveGateAccountID:
     Description: Your Amazon account ID hosting the ActiveGate
-    Value: !Ref AWS::AccountId
+    Value: !Ref 'AWS::AccountId'
   MonitoringRoleName:
     Description: IAM role that Dynatrace should use to get monitoring data
-    Value: !Ref MonitoringRoleName
+    Value: !Ref 'MonitoringRoleName'
   MonitoredAccountID:
     Description: ID of the account that Dynatrace should monitor
-    Value: !Ref MonitoredAccountID
+    Value: !Ref 'MonitoredAccountID'
