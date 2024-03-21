@@ -20,7 +20,7 @@ Endpoints to test:
     - Before executing the script, ensure it has execution permissions. You can grant execution permissions using the `chmod +x azure_connectivity_checker.sh` command.
 
 3. **Execute the Script:**
-    - Run the script from the terminal with appropriate parameters if needed. Run the script for the ActiveGate user, for which the ActiveGate was installed (`dtuserag` by default).
+   - Run the script from a terminal on the machine where ActiveGate is installed, using the appropriate parameters, if necessary. Run the script for the ActiveGate user for whom ActiveGate was installed (`dtuserag` by default).
 
       Here's the general syntax:
       ```

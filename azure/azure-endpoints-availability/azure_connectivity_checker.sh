@@ -94,18 +94,18 @@ check_connectivity() {
         if [ "$isProxyUsed" = true ]; then
             # Check connection to Azure via proxy
             log_to_console_and_file "Checking connectivity to Azure endpoint [$endpoint:443] via [$proxy_server:$proxy_port]..."
-            curl=`proxy_connect_command "$endpoint" "$proxy_server" "$proxy_port" "$ssl_cert"`
+            curl_str=`proxy_connect_command "$endpoint" "$proxy_server" "$proxy_port" "$ssl_cert"`
         else
             # Check direct connection to Azure endpoints
             log_to_console_and_file "Checking direct connectivity to Azure endpoint [$endpoint]..."
-            curl=`direct_connect_command "$endpoint"`
+            curl_str=`direct_connect_command "$endpoint"`
         fi
 
 
-        log_message "cURL command:\n$curl"
+        log_message "cURL command:\n$curl_str"
         log_message "Response:"
 
-        curl_output=$($curl 2>&1)
+        curl_output=$($curl_str 2>&1)
         log_message "$curl_output"
 
         if [ $? -eq 0 ] && [[ "$curl_output" = *"left intact"* ]]; then
