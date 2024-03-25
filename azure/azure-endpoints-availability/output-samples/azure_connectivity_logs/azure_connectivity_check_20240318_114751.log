@@ -1,0 +1,379 @@
+=======================================================================
+Azure Connectivity Checker Script
+=======================================================================
+Working directory: /home/azureuser
+Current user: dtuserag
+ActiveGate configuration directory is not specified.
+    - The direct connection to Azure endpoints will be tested without considering proxy settings.
+    - To test the connection via proxy configured in custom.properties, please run the script with the parameter -p /path/to/config/directory and -c /path/to/certificate
+=======================================================================
+Checking the availability of Azure endpoints
+-----------------------------------------------------------------------
+Checking direct connectivity to Azure endpoint [https://management.azure.com/]...
+cURL command:
+curl -v -I https://management.azure.com/ --max-time 5
+Response:
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 20.61.101.39:443...
+* TCP_NODELAY set
+* Connected to management.azure.com (20.61.101.39) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [88 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [187 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [15 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [3748 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [264 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [52 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [52 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN, server accepted to use h2
+* Server certificate:
+*  subject: C=US; ST=WA; L=Redmond; O=Microsoft Corporation; CN=management.azure.com
+*  start date: Mar  5 20:30:04 2024 GMT
+*  expire date: Feb 28 20:30:04 2025 GMT
+*  subjectAltName: host "management.azure.com" matched cert's "management.azure.com"
+*  issuer: C=US; O=Microsoft Corporation; CN=Microsoft Azure RSA TLS Issuing CA 04
+*  SSL certificate verify ok.
+* Using HTTP2, server supports multi-use
+* Connection state changed (HTTP/2 confirmed)
+* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+} [5 bytes data]
+* Using Stream ID: 1 (easy handle 0x564af2fe40e0)
+} [5 bytes data]
+> HEAD / HTTP/2
+> Host: management.azure.com
+> user-agent: curl/7.68.0
+> accept: */*
+> 
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [81 bytes data]
+* Connection state changed (MAX_CONCURRENT_STREAMS == 100)!
+} [5 bytes data]
+< HTTP/2 400 
+< cache-control: no-cache
+< pragma: no-cache
+< content-length: 0
+< expires: -1
+< x-ms-failure-cause: gateway
+< x-ms-request-id: dd4eaed4-628d-4f5f-bb03-a3f174bd4c8d
+< x-ms-correlation-request-id: dd4eaed4-628d-4f5f-bb03-a3f174bd4c8d
+< x-ms-routing-request-id: WESTEUROPE:20240318T114752Z:dd4eaed4-628d-4f5f-bb03-a3f174bd4c8d
+< strict-transport-security: max-age=31536000; includeSubDomains
+< x-content-type-options: nosniff
+< date: Mon, 18 Mar 2024 11:47:51 GMT
+< 
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Connection #0 to host management.azure.com left intact
+HTTP/2 400 
+cache-control: no-cache
+pragma: no-cache
+content-length: 0
+expires: -1
+x-ms-failure-cause: gateway
+x-ms-request-id: dd4eaed4-628d-4f5f-bb03-a3f174bd4c8d
+x-ms-correlation-request-id: dd4eaed4-628d-4f5f-bb03-a3f174bd4c8d
+x-ms-routing-request-id: WESTEUROPE:20240318T114752Z:dd4eaed4-628d-4f5f-bb03-a3f174bd4c8d
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+date: Mon, 18 Mar 2024 11:47:51 GMT
+
+Connection to https://management.azure.com/ is SUCCESSFUL.
+-----------------------------------------------------------------------
+Checking direct connectivity to Azure endpoint [https://login.microsoftonline.com/]...
+cURL command:
+curl -v -I https://login.microsoftonline.com/ --max-time 5
+Response:
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 40.126.32.140:443...
+* TCP_NODELAY set
+* Connected to login.microsoftonline.com (40.126.32.140) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [88 bytes data]
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [187 bytes data]
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+{ [19 bytes data]
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+{ [3288 bytes data]
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+{ [264 bytes data]
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+{ [52 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+} [52 bytes data]
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN, server accepted to use h2
+* Server certificate:
+*  subject: C=US; ST=Washington; L=Redmond; O=Microsoft Corporation; CN=stamp2.login.microsoftonline.com
+*  start date: Feb 21 00:00:00 2024 GMT
+*  expire date: Feb 21 23:59:59 2025 GMT
+*  subjectAltName: host "login.microsoftonline.com" matched cert's "login.microsoftonline.com"
+*  issuer: C=US; O=DigiCert Inc; CN=DigiCert SHA2 Secure Server CA
+*  SSL certificate verify ok.
+* Using HTTP2, server supports multi-use
+* Connection state changed (HTTP/2 confirmed)
+* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+} [5 bytes data]
+* Using Stream ID: 1 (easy handle 0x5586cdaf00e0)
+} [5 bytes data]
+> HEAD / HTTP/2
+> Host: login.microsoftonline.com
+> user-agent: curl/7.68.0
+> accept: */*
+> 
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Newsession Ticket (4):
+{ [81 bytes data]
+* Connection state changed (MAX_CONCURRENT_STREAMS == 100)!
+} [5 bytes data]
+< HTTP/2 200 
+< cache-control: no-store, no-cache
+< pragma: no-cache
+< content-length: 19900
+< content-type: text/html; charset=utf-8
+< expires: -1
+< strict-transport-security: max-age=31536000; includeSubDomains
+< x-content-type-options: nosniff
+< link: <https://aadcdn.msauth.net>; rel=preconnect; crossorigin
+< link: <https://aadcdn.msauth.net>; rel=dns-prefetch
+< link: <https://aadcdn.msftauth.net>; rel=dns-prefetch
+< x-dns-prefetch-control: on
+< p3p: CP="DSP CUR OTPi IND OTRi ONL FIN"
+< x-ms-request-id: 3ab3a029-15b4-4f1d-83a7-de4997291a00
+< x-ms-ests-server: 2.1.17573.4 - FRC ProdSlices
+< x-xss-protection: 0
+< set-cookie: fpc=Ai8N7epDpwhHv2seED1tQuM; expires=Wed, 17-Apr-2024 11:47:52 GMT; path=/; secure; HttpOnly; SameSite=None
+< set-cookie: esctx=PAQABBwEAAADnfolhJpSnRYB1SVj-Hgd8L52VFlnf5DfljIAIV4kHd5E2Ukw0yhcItH_6lpAy9CsWdkepJVD-xxvnMXGms62mozBXoCT5DXbeRtnAw1rwFvpYVw4HyBymLi-zOhZQQLohIB3nmL4_A_AdJf8-Z-E6FDyjgASWFPz0GpzDYsHria4JaZ3DCfZrdJHd-dlyT_8gAA; domain=.login.microsoftonline.com; path=/; secure; HttpOnly; SameSite=None
+< set-cookie: x-ms-gateway-slice=estsfd; path=/; secure; samesite=none; httponly
+< set-cookie: stsservicecookie=estsfd; path=/; secure; samesite=none; httponly
+< date: Mon, 18 Mar 2024 11:47:51 GMT
+< 
+  0 19900    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Connection #0 to host login.microsoftonline.com left intact
+HTTP/2 200 
+cache-control: no-store, no-cache
+pragma: no-cache
+content-length: 19900
+content-type: text/html; charset=utf-8
+expires: -1
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+link: <https://aadcdn.msauth.net>; rel=preconnect; crossorigin
+link: <https://aadcdn.msauth.net>; rel=dns-prefetch
+link: <https://aadcdn.msftauth.net>; rel=dns-prefetch
+x-dns-prefetch-control: on
+p3p: CP="DSP CUR OTPi IND OTRi ONL FIN"
+x-ms-request-id: 3ab3a029-15b4-4f1d-83a7-de4997291a00
+x-ms-ests-server: 2.1.17573.4 - FRC ProdSlices
+x-xss-protection: 0
+set-cookie: fpc=Ai8N7epDpwhHv2seED1tQuM; expires=Wed, 17-Apr-2024 11:47:52 GMT; path=/; secure; HttpOnly; SameSite=None
+set-cookie: esctx=PAQABBwEAAADnfolhJpSnRYB1SVj-Hgd8L52VFlnf5DfljIAIV4kHd5E2Ukw0yhcItH_6lpAy9CsWdkepJVD-xxvnMXGms62mozBXoCT5DXbeRtnAw1rwFvpYVw4HyBymLi-zOhZQQLohIB3nmL4_A_AdJf8-Z-E6FDyjgASWFPz0GpzDYsHria4JaZ3DCfZrdJHd-dlyT_8gAA; domain=.login.microsoftonline.com; path=/; secure; HttpOnly; SameSite=None
+set-cookie: x-ms-gateway-slice=estsfd; path=/; secure; samesite=none; httponly
+set-cookie: stsservicecookie=estsfd; path=/; secure; samesite=none; httponly
+date: Mon, 18 Mar 2024 11:47:51 GMT
+
+Connection to https://login.microsoftonline.com/ is SUCCESSFUL.
+-----------------------------------------------------------------------
+Checking direct connectivity to Azure endpoint [https://management.core.windows.net/]...
+cURL command:
+curl -v -I https://management.core.windows.net/ --max-time 5
+Response:
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 23.102.135.246:443...
+* TCP_NODELAY set
+* Connected to management.core.windows.net (23.102.135.246) port 443 (#0)
+* ALPN, offering h2
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [94 bytes data]
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+{ [3690 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+{ [365 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+{ [4 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+} [102 bytes data]
+* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+} [16 bytes data]
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+{ [16 bytes data]
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES256-GCM-SHA384
+* ALPN, server accepted to use h2
+* Server certificate:
+*  subject: C=US; ST=WA; L=Redmond; O=Microsoft Corporation; CN=ussouth3.management.core.windows.net
+*  start date: Feb  6 18:56:44 2024 GMT
+*  expire date: Jan 31 18:56:44 2025 GMT
+*  subjectAltName: host "management.core.windows.net" matched cert's "management.core.windows.net"
+*  issuer: C=US; O=Microsoft Corporation; CN=Microsoft Azure RSA TLS Issuing CA 07
+*  SSL certificate verify ok.
+* Using HTTP2, server supports multi-use
+* Connection state changed (HTTP/2 confirmed)
+* Copying HTTP/2 data in stream buffer to connection buffer after upgrade: len=0
+} [5 bytes data]
+* Using Stream ID: 1 (easy handle 0x55e6e2a2f0e0)
+} [5 bytes data]
+> HEAD / HTTP/2
+> Host: management.core.windows.net
+> user-agent: curl/7.68.0
+> accept: */*
+> 
+{ [5 bytes data]
+* Connection state changed (MAX_CONCURRENT_STREAMS == 100)!
+} [5 bytes data]
+* HTTP/2 stream 0 was not closed cleanly: HTTP_1_1_REQUIRED (err 13)
+* Downgrades to HTTP/1.1!
+* Empty reply from server
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Connection #0 to host management.core.windows.net left intact
+* Issue another request to this URL: 'https://management.core.windows.net/'
+* Found bundle for host management.core.windows.net: 0x55e6e2a23f90 [can multiplex]
+* Re-using existing connection! (#0) with host management.core.windows.net
+* Connected to management.core.windows.net (23.102.135.246) port 443 (#0)
+* Using Stream ID: 3 (easy handle 0x55e6e2a2f0e0)
+} [5 bytes data]
+> HEAD / HTTP/2
+> Host: management.core.windows.net
+> user-agent: curl/7.68.0
+> accept: */*
+> 
+{ [5 bytes data]
+* HTTP/2 stream 0 was not closed cleanly: HTTP_1_1_REQUIRED (err 13)
+* Connection died, retrying a fresh connect
+* Downgrades to HTTP/1.1!
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+* Closing connection 0
+} [5 bytes data]
+* TLSv1.2 (OUT), TLS alert, close notify (256):
+} [2 bytes data]
+* Issue another request to this URL: 'https://management.core.windows.net/'
+* Hostname management.core.windows.net was found in DNS cache
+*   Trying 23.102.135.246:443...
+* TCP_NODELAY set
+* Connected to management.core.windows.net (23.102.135.246) port 443 (#1)
+* ALPN, offering http/1.1
+* successfully set certificate verify locations:
+*   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+* SSL re-using session ID
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+{ [100 bytes data]
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+{ [3690 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+{ [365 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+{ [4 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+} [102 bytes data]
+* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+} [16 bytes data]
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+{ [16 bytes data]
+* old SSL session ID is stale, removing
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES256-GCM-SHA384
+* ALPN, server accepted to use http/1.1
+* Server certificate:
+*  subject: C=US; ST=WA; L=Redmond; O=Microsoft Corporation; CN=ussouth3.management.core.windows.net
+*  start date: Feb  6 18:56:44 2024 GMT
+*  expire date: Jan 31 18:56:44 2025 GMT
+*  subjectAltName: host "management.core.windows.net" matched cert's "management.core.windows.net"
+*  issuer: C=US; O=Microsoft Corporation; CN=Microsoft Azure RSA TLS Issuing CA 07
+*  SSL certificate verify ok.
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0} [5 bytes data]
+> HEAD / HTTP/1.1
+> Host: management.core.windows.net
+> User-Agent: curl/7.68.0
+> Accept: */*
+> 
+{ [5 bytes data]
+* TLSv1.2 (IN), TLS handshake, Hello request (0):
+{ [4 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client hello (1):
+} [512 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server hello (2):
+{ [109 bytes data]
+* TLSv1.2 (IN), TLS handshake, Certificate (11):
+{ [3690 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+{ [365 bytes data]
+* TLSv1.2 (IN), TLS handshake, Request CERT (13):
+{ [30 bytes data]
+* TLSv1.2 (IN), TLS handshake, Server finished (14):
+{ [4 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Certificate (11):
+} [7 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+} [102 bytes data]
+* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
+} [1 bytes data]
+* TLSv1.2 (OUT), TLS handshake, Finished (20):
+} [16 bytes data]
+* TLSv1.2 (IN), TLS handshake, Finished (20):
+{ [16 bytes data]
+* old SSL session ID is stale, removing
+{ [5 bytes data]
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 403 Forbidden
+< Content-Length: 0
+< Server: Microsoft-HTTPAPI/2.0
+< Strict-Transport-Security: max-age=31536000; includeSubDomains
+< Date: Mon, 18 Mar 2024 11:47:53 GMT
+< 
+  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+* Connection #1 to host management.core.windows.net left intact
+HTTP/1.1 403 Forbidden
+Content-Length: 0
+Server: Microsoft-HTTPAPI/2.0
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Date: Mon, 18 Mar 2024 11:47:53 GMT
+
+Connection to https://management.core.windows.net/ is SUCCESSFUL.
+-----------------------------------------------------------------------
