@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates an EventBridge rule to ingest events as log events in Dynatrace
+
+Metadata:
+  License:
+    Description: |
+      Copyright 2024 Dynatrace LLC
+
+      Licensed under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License.
+      You may obtain a copy of the License at
+
+          https://www.apache.org/licenses/LICENSE-2.0
+
+      Unless required by applicable law or agreed to in writing, software
+      distributed under the License is distributed on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      See the License for the specific language governing permissions and
+      limitations under the License.
+
+Parameters:
+  pDynatraceEnvironmentUrl:
+    Type: String
+    Description: Dynatrace Environment URL (e.g. https://abc12345.live.dynatrace.com). Do not add a trailing "/"
+  pDynatraceAccessToken:
+    Type: String
+    NoEcho: true
+    Description: Dynatrace Access Token with Log Ingest scope
+  pEventSources:
+    Type: CommaDelimitedList
+    Description: Comma-separated list of values of event sources to forward to Dynatrace
+  pEventDetailTypes:
+    Type: CommaDelimitedList
+    Description: Comma-separated list of event detail-types to forward to Dynatrace
+    Default: ""
+  pEventBridgeBusName:
+    Type: String
+    Description: Name of the Amazon EventBridge bus from which to consume the events from. If left empty, rule is created on the default bus
+    Default: ""
+  pInvocationRateLimitPerSecond:
+    Type: Number
+    Description: Limit number of requests per second to the Dynatrace API
+    Default: 100
+
+Conditions:
+  cEventDetailTypesIsNotEmpty: !Not [!Equals [!Join ['', !Ref pEventDetailTypes], '']]
+  cEventBusIsDefined: !Not [!Equals ['', !Ref pEventBridgeBusName ]]
+
+Resources:
+
+  rDynatraceConnection:
+    Type: AWS::Events::Connection
+    Properties:
+      AuthorizationType: API_KEY
+      AuthParameters:
+        ApiKeyAuthParameters:
+          ApiKeyName: Authorization
+          ApiKeyValue: !Sub Api-Token ${pDynatraceAccessToken}
+
+  rDynatraceApiDestination:
+    Type: AWS::Events::ApiDestination
+    Properties:
+      ConnectionArn: !GetAtt rDynatraceConnection.Arn
+      HttpMethod: POST
+      InvocationEndpoint: !Sub ${pDynatraceEnvironmentUrl}/api/v2/logs/ingest
+      InvocationRateLimitPerSecond: !Ref pInvocationRateLimitPerSecond
+
+  rEventBridgeToDynatraceIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: AllowInvokeHttpApi
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - events:InvokeApiDestination
+                Resource: !Sub ${rDynatraceApiDestination.Arn}
+
+  rEventBridgeToBizEventsRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !If [ cEventBusIsDefined, !Ref pEventBridgeBusName, !Ref AWS::NoValue ]
+      EventPattern:
+        source: !Ref pEventSources
+        detail-type: !If [cEventDetailTypesIsNotEmpty, !Ref pEventDetailTypes, !Ref AWS::NoValue]
+      Targets:
+        - Arn: !GetAtt rDynatraceApiDestination.Arn
+          RoleArn: !GetAtt rEventBridgeToDynatraceIAMRole.Arn
+          HttpParameters:
+            HeaderParameters:
+              Content-Type: application/json; charset=utf-8
+          Id: dynatrace
+          InputTransformer:
+            InputPathsMap:
+              accountid: "$.account"
+              region: "$.region"
+              source: "$.source"
+              time: "$.time"
+            InputTemplate: >-
+              {
+                "timestamp": <time>,
+                "log.source": <source>,
+                "aws.account.id": <accountid>,
+                "aws.region": <region>,
+                "aws.service": "eventbridge",
+                "content": <aws.events.event.json>
+              }

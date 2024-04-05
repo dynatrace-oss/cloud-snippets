@@ -1,0 +1,25 @@
+{
+    "specversion": "1.0",
+    "id": "57d455f4-0812-3fc1-c7b4-01043c0426ad",
+    "source": "aws.s3",
+    "type": "Object Created",
+    "time": "2024-03-13T10:02:51Z",
+    "region": "us-east-1",
+    "data": {
+        "version": "0",
+        "bucket": {
+          "name": "mys3bucket"
+        },
+        "object": {
+          "key": "example-doc.json",
+          "size": 4983,
+          "etag": "2b658bf0a5360a3a3a85405b1f970934",
+          "version-id": "UR0BfR3HgbuluJJWM.wDJkWW0S8zA.C2",
+          "sequencer": "0065F16E1331EDD606"
+        },
+        "request-id": "A7H1SXCAW6W67F7E",
+        "requester": "delivery.logs.amazonaws.com",
+        "source-ip-address": "1.2.3.4",
+        "reason": "PutObject"
+    }
+}
