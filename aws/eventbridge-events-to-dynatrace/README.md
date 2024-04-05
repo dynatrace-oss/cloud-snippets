@@ -40,12 +40,12 @@ The provided CloudFormation template creates an Eventbridge rule configured with
 
 ```json
 {
-    "timestamp": <event time>,
-    "aws.account.id": <AWS Account Id>,
-    "log.source": <Event Source>,
-    "aws.region": <AWS Region>,
+    "timestamp": "<event time>",
+    "aws.account.id": "<AWS Account Id>",
+    "log.source": "<Event Source>",
+    "aws.region": "<AWS Region>",
     "aws.service": "eventbridge",
-    "content": <EventBridge event object>,
+    "content": "<EventBridge event object>",
 }
 ```
 
