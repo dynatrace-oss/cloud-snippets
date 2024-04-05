@@ -1,4 +1,4 @@
-# Send AWS EventBridge events to Dynatrace
+# Send Amazon EventBridge events to Dynatrace
 
 This folder contains AWS CloudFormation templates to set up forwarding of events from [Amazon EventBridge](https://aws.amazon.com/eventbridge/) to Dynatrace with two possible ingestion mechanisms:
 
