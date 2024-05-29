@@ -1,0 +1,1999 @@
+{
+    "version": 14,
+    "variables": [],
+    "tiles": {
+        "0": {
+            "type": "data",
+            "title": "Virtual Machines by Availability Zone",
+            "query": "fetch `dt.entity.cloud:gcp:gce_instance`\n| fieldsadd gcp.resource.name=entity.name, entity.type, icon, id, managementZones\n| fieldsadd gcp.project.id = project_id, gcp.gce_instance.zone =  zone, gcp.gce_instance.instance_id =  instance_id, gcp.gce_instance.instance_name =  instance_name\n| summarize  count=count(), by: gcp.gce_instance.zone",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "gcp.gce_instance.zone",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "gcp.gce_instance.zone",
+                        "valueAxisLabel": "count"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "gcp.gce_instance.zone"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "gcp.gce_instance.zone",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "pieChart"
+        },
+        "2": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Google Compute Engine"
+        },
+        "3": {
+            "type": "data",
+            "title": "Virtual Machines by GCP Project",
+            "query": "fetch `dt.entity.cloud:gcp:gce_instance`\n| fieldsadd gcp.resource.name=entity.name, entity.type, icon, id, managementZones\n| fieldsadd gcp.project.id = project_id, gcp.gce_instance.zone =  zone, gcp.gce_instance.instance_id =  instance_id, gcp.gce_instance.instance_name =  instance_name\n| summarize  count=count(), by: gcp.project.id",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "gcp.project.id",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "gcp.project.id",
+                        "valueAxisLabel": "count"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "gcp.project.id"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "gcp.project.id",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "pieChart"
+        },
+        "4": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Azure Virtual Machines"
+        },
+        "5": {
+            "type": "data",
+            "title": "Virtual Machines by Region",
+            "query": "fetch dt.entity.azure_vm\n| fieldsAdd  azure_subscription = accessible_by[dt.entity.azure_subscription][0], azure_region = belongs_to[dt.entity.azure_region]\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure_region, lookupField:id, prefix:\"azure.region.\"\n| summarize  count=count(), by: azure.region.name",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "absolute",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.region.name",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "azure.region.name",
+                        "valueAxisLabel": "count"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "azure.region.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.region.name",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "pieChart",
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "6": {
+            "type": "data",
+            "title": "Virtual Machines by Azure Subscription",
+            "query": "fetch dt.entity.azure_vm\n| fieldsAdd  azure_subscription = accessible_by[dt.entity.azure_subscription][0], azure_region = belongs_to[dt.entity.azure_region]\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure_region, lookupField:id, prefix:\"azure.region.\"\n| summarize  count=count(), by: azure.subscription.name",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.subscription.name",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "azure.subscription.name",
+                        "valueAxisLabel": "count"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "azure.subscription.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.subscription.name",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "pieChart",
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "7": {
+            "type": "markdown",
+            "title": "",
+            "content": "### AWS EC2 Instances"
+        },
+        "8": {
+            "type": "data",
+            "title": "EC2 Instances by Availability Zone",
+            "query": "fetch dt.entity.ec2_instance\n| fieldsAdd  aws_credentials=accessible_by[dt.entity.aws_credentials][0],  instance.id =awsInstanceId, aws_availability_zone=belongs_to[dt.entity.aws_availability_zone] \n| lookup [fetch dt.entity.aws_credentials | fieldsadd name = entity.name, id, awsAccountId ], sourceField:aws_credentials, lookupField:id, prefix:\"aws.credentials.\" | fieldsRename aws.account_id =  aws.credentials.awsAccountId\n| lookup [fetch dt.entity.aws_availability_zone | fieldsadd name = entity.name, id ], sourceField:aws_availability_zone, lookupField:id, prefix:\"aws.availability_zone.\" \n| summarize  count=count(), by: aws.availability_zone.name",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "aws.availability_zone.name",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "aws.availability_zone.name",
+                        "valueAxisLabel": "count"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "aws.availability_zone.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "aws.availability_zone.name",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "pieChart"
+        },
+        "9": {
+            "type": "data",
+            "title": "Virtual Machines by Account ID",
+            "query": "fetch dt.entity.ec2_instance\n| fieldsAdd  aws_credentials=accessible_by[dt.entity.aws_credentials][0],  instance.id =awsInstanceId, aws_availability_zone=belongs_to[dt.entity.aws_availability_zone] \n| lookup [fetch dt.entity.aws_credentials | fieldsadd name = entity.name, id, awsAccountId ], sourceField:aws_credentials, lookupField:id, prefix:\"aws.credentials.\" | fieldsRename aws.account_id =  aws.credentials.awsAccountId\n| lookup [fetch dt.entity.aws_availability_zone | fieldsadd name = entity.name, id ], sourceField:aws_availability_zone, lookupField:id, prefix:\"aws.availability_zone.\" \n| summarize  count=count(), by: aws.account_id",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "aws.account_id",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "aws.account_id",
+                        "valueAxisLabel": "count"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "aws.account_id"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "aws.account_id",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "pieChart"
+        },
+        "10": {
+            "type": "data",
+            "title": "Top VM's by maximum CPU usage",
+            "query": "timeseries max= max(dt.cloud.azure.vm.cpu_usage),       \n by:  {dt.entity.azure_vm}\n| fieldsAdd maxCpu = arrayMax(max)\n| sort maxCpu desc\n| lookup [fetch dt.entity.azure_vm | fieldsAdd name = entity.name, azure_subscription=accessible_by[dt.entity.azure_subscription][0],  azure_region=belongs_to[dt.entity.azure_region] ], sourceField:`dt.entity.azure_vm`, lookupField:id, prefix:\"azure.vm.\"\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure.vm.azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure.vm.azure_region, lookupField:id, prefix:\"azure.region.\"\n| fieldsKeep   maxCpu,azure.vm.name, azure.subscription.name, azure.region.name\n| limit 20",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.vm.name",
+                        "valueAxis": "maxCpu",
+                        "categoryAxisLabel": "azure.vm.name",
+                        "valueAxisLabel": "maxCpu",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal",
+                        "max": 100
+                    },
+                    "legend": {
+                        "hidden": true
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "maxCpu"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.vm.name",
+                        "value": "maxCpu"
+                    },
+                    "legend": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "maxCpu",
+                        "unitCategory": "percentage",
+                        "baseUnit": "percent",
+                        "displayUnit": null,
+                        "decimals": 0,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1706091855699
+                    }
+                ],
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "maxCpu",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "11": {
+            "type": "data",
+            "title": "Top EC2 instances by maximum CPU usage",
+            "query": "timeseries max= max(dt.cloud.aws.ec2.cpu.usage),       \n by:  {dt.entity.ec2_instance}\n| fieldsAdd maxCpu = arrayMax(max)\n| lookup [fetch dt.entity.ec2_instance | fieldsAdd name = entity.name, aws_credentials=accessible_by[dt.entity.aws_credentials][0],  instance.id =awsInstanceId, aws_availability_zone=belongs_to[dt.entity.aws_availability_zone]  ], sourceField:`dt.entity.ec2_instance`, lookupField:id, prefix:\"aws.ec2.\"\n| lookup [fetch dt.entity.aws_credentials | fieldsadd name = entity.name, id, awsAccountId ], sourceField:aws.ec2.aws_credentials, lookupField:id, prefix:\"aws.credentials.\" | fieldsRename aws.account_id =  aws.credentials.awsAccountId\n| lookup [fetch dt.entity.aws_availability_zone | fieldsadd name = entity.name, id ], sourceField:aws.ec2.aws_availability_zone, lookupField:id, prefix:\"aws.availability_zone.\" \n| fieldsKeep   maxCpu,aws.ec2.name,aws.ec2.instance.id, aws.account_id, aws.availability_zone.name\n| sort maxCpu desc\n| limit 20",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "aws.ec2.name",
+                        "valueAxis": "maxCpu",
+                        "categoryAxisLabel": "aws.ec2.name",
+                        "valueAxisLabel": "maxCpu",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal",
+                        "max": 100
+                    },
+                    "legend": {
+                        "hidden": true
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "maxCpu"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "aws.ec2.name",
+                        "value": "maxCpu"
+                    },
+                    "legend": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "maxCpu",
+                        "unitCategory": "percentage",
+                        "baseUnit": "percent",
+                        "displayUnit": null,
+                        "decimals": 0,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1706091823184
+                    }
+                ],
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "maxCpu",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "12": {
+            "type": "data",
+            "title": "Top VM instances by maximum CPU usage",
+            "query": "timeseries max= max(cloud.gcp.compute_googleapis_com.instance.cpu.utilization),       \n by:  {gcp.instance.name, gcp.project.id, gcp.region}\n| fieldsAdd maxCpu = arrayMax(max)\n| fieldsKeep   maxCpu,gcp.instance.name\n| sort maxCpu desc\n| limit 20",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "gcp.instance.name",
+                        "valueAxis": "maxCpu",
+                        "categoryAxisLabel": "gcp.instance.name",
+                        "valueAxisLabel": "maxCpu",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal",
+                        "max": 100
+                    },
+                    "legend": {
+                        "hidden": true
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "gcp.instance.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "gcp.instance.name",
+                        "value": "maxCpu"
+                    },
+                    "legend": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "maxCpu",
+                        "unitCategory": "percentage",
+                        "baseUnit": "percent",
+                        "displayUnit": null,
+                        "decimals": 0,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1706091974388
+                    }
+                ],
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "maxCpu",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "13": {
+            "type": "markdown",
+            "title": "",
+            "content": "### Summary"
+        },
+        "14": {
+            "type": "data",
+            "title": "Virtual Machines by Hyperscaler",
+            "query": "fetch `dt.entity.cloud:gcp:gce_instance`\n| fieldsAdd  cloud=\"Google Cloud Platform\"\n| summarize  count= count(), by: cloud\n| append [ fetch dt.entity.ec2_instance\n| fieldsAdd  cloud=\"Amazon Web Services\"\n| summarize  count= count(), by: cloud]\n| append [ fetch dt.entity.azure_vm\n| fieldsAdd  cloud=\"Azure Cloud\"\n| summarize  count= count(), by: cloud]\n",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "cloud",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "cloud",
+                        "valueAxisLabel": "count"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "cloud"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "cloud",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "pieChart",
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "15": {
+            "type": "data",
+            "title": "Trend of top VM's by maximum CPU usage",
+            "query": "timeseries max= max(dt.cloud.azure.vm.cpu_usage),       \n by:   { dt.entity.azure_vm}\n| lookup [fetch dt.entity.azure_vm | fieldsAdd name = entity.name, azure_subscription=accessible_by[dt.entity.azure_subscription][0],  azure_region=belongs_to[dt.entity.azure_region] ], sourceField:`dt.entity.azure_vm`, lookupField:id, prefix:\"azure.vm.\"\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure.vm.azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure.vm.azure_region, lookupField:id, prefix:\"azure.region.\"\n| fieldsKeep  timeframe,  max, azure.vm.name, interval\n| sort max desc\n| limit 10",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": [
+                            {
+                                "id": 0,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-09-default, #649438)"
+                                },
+                                "comparator": "≥",
+                                "label": ""
+                            },
+                            {
+                                "id": 1,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-14-default, #d56b1a)"
+                                },
+                                "comparator": "≥",
+                                "label": "",
+                                "value": 80
+                            },
+                            {
+                                "id": 2,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-12-default, #cd3741)"
+                                },
+                                "comparator": "≥",
+                                "label": "",
+                                "value": 95
+                            }
+                        ]
+                    }
+                ],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.vm.name",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "azure.vm.name",
+                        "valueAxisLabel": "interval",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ],
+                        "leftAxisDimensions": [
+                            "azure.vm.name"
+                        ],
+                        "fields": [],
+                        "values": []
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "leftYAxisSettings": {
+                        "max": 100
+                    },
+                    "hiddenLegendFields": [
+                        "azure.vm"
+                    ]
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "azure.vm.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.vm.name",
+                        "value": "azure.vm.name"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "16": {
+            "type": "data",
+            "title": "Trend of top EC2 isntances by maximum CPU usage",
+            "query": "timeseries max= max(dt.cloud.aws.ec2.cpu.usage),       \n by:  {dt.entity.ec2_instance}\n| lookup [fetch dt.entity.ec2_instance | fieldsAdd name = entity.name, aws_credentials=accessible_by[dt.entity.aws_credentials][0],  instance.id =awsInstanceId, aws_availability_zone=belongs_to[dt.entity.aws_availability_zone]  ], sourceField:`dt.entity.ec2_instance`, lookupField:id, prefix:\"aws.ec2.\"\n| lookup [fetch dt.entity.aws_credentials | fieldsadd name = entity.name, id, awsAccountId ], sourceField:aws.ec2.aws_credentials, lookupField:id, prefix:\"aws.credentials.\" | fieldsRename aws.account_id =  aws.credentials.awsAccountId\n| lookup [fetch dt.entity.aws_availability_zone | fieldsadd name = entity.name, id ], sourceField:aws.ec2.aws_availability_zone, lookupField:id, prefix:\"aws.availability_zone.\" \n| fieldsKeep  timeframe,  max, interval, aws.ec2.name,aws.ec2.instance.id\n| sort max desc\n| limit 20",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": [
+                            {
+                                "id": 0,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-09-default, #649438)"
+                                },
+                                "comparator": "≥",
+                                "label": ""
+                            },
+                            {
+                                "id": 1,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-14-default, #d56b1a)"
+                                },
+                                "comparator": "≥",
+                                "label": "",
+                                "value": 80
+                            },
+                            {
+                                "id": 2,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-12-default, #cd3741)"
+                                },
+                                "comparator": "≥",
+                                "label": "",
+                                "value": 95
+                            }
+                        ]
+                    }
+                ],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "aws.ec2.name",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "aws.ec2.name",
+                        "valueAxisLabel": "interval",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ],
+                        "leftAxisDimensions": [
+                            "aws.ec2.name",
+                            "aws.ec2.instance.id"
+                        ],
+                        "fields": [],
+                        "values": []
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "leftYAxisSettings": {
+                        "max": 100
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ]
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "aws.ec2.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "aws.ec2.name",
+                        "value": "aws.ec2.instance.id"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "17": {
+            "type": "data",
+            "title": "Trend of top VM's by maximum CPU usage",
+            "query": "timeseries max= max(cloud.gcp.compute_googleapis_com.instance.cpu.utilization),       \n by:  {gcp.instance.name, gcp.project.id, gcp.region}\n| fieldsKeep  timeframe, interval,  max,gcp.instance.name\n| sort max desc\n| limit 10",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": [
+                            {
+                                "id": 0,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-09-default, #649438)"
+                                },
+                                "comparator": "≥",
+                                "label": ""
+                            },
+                            {
+                                "id": 1,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-14-default, #d56b1a)"
+                                },
+                                "comparator": "≥",
+                                "label": "",
+                                "value": 80
+                            },
+                            {
+                                "id": 2,
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-categorical-color-12-default, #cd3741)"
+                                },
+                                "comparator": "≥",
+                                "label": "",
+                                "value": 95
+                            }
+                        ]
+                    }
+                ],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "gcp.instance.name",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "gcp.instance.name",
+                        "valueAxisLabel": "interval",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ],
+                        "leftAxisDimensions": [
+                            "gcp.instance.name"
+                        ],
+                        "fields": [],
+                        "values": []
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "leftYAxisSettings": {
+                        "max": 100
+                    },
+                    "hiddenLegendFields": [
+                        "gcp.instance"
+                    ]
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "gcp.instance.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "gcp.instance.name",
+                        "value": "gcp.instance.name"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "18": {
+            "type": "data",
+            "title": "VM's with highest incoming network traffic trend ",
+            "query": "timeseries sum= sum(dt.cloud.azure.vm.network.bytes_in,rate:1s),       \n by:   { dt.entity.azure_vm}\n| fieldsAdd  bitPerSec =sum[]*8\n| lookup [fetch dt.entity.azure_vm | fieldsAdd name = entity.name, azure_subscription=accessible_by[dt.entity.azure_subscription][0],  azure_region=belongs_to[dt.entity.azure_region] ], sourceField:`dt.entity.azure_vm`, lookupField:id, prefix:\"azure.vm.\"\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure.vm.azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure.vm.azure_region, lookupField:id, prefix:\"azure.region.\"\n| fieldsKeep  timeframe, bitPerSec, azure.vm.name, interval\n| sort bitPerSec desc",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "barChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.vm.name",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "azure.vm.name",
+                        "valueAxisLabel": "interval",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "bitPerSec"
+                        ],
+                        "leftAxisDimensions": [
+                            "azure.vm.name"
+                        ],
+                        "fields": [],
+                        "values": []
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto",
+                        "scale": "linear"
+                    },
+                    "hiddenLegendFields": [
+                        "azure.vm"
+                    ]
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "azure.vm.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.vm.name",
+                        "value": "azure.vm.name"
+                    },
+                    "legend": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "bitPerSec",
+                        "unitCategory": "datarate",
+                        "baseUnit": "bitps",
+                        "displayUnit": null,
+                        "decimals": 3,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1706091421856
+                    }
+                ],
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "19": {
+            "type": "data",
+            "title": "Top VM's by incoming network traffic",
+            "query": "timeseries sum= sum(dt.cloud.azure.vm.network.bytes_in, rate:1s),   \n by:  {dt.entity.azure_vm}\n| fieldsAdd bitPerSec = arrayMax(sum)*8\n| sort bitPerSec desc\n| lookup [fetch dt.entity.azure_vm | fieldsAdd name = entity.name, azure_subscription=accessible_by[dt.entity.azure_subscription][0],  azure_region=belongs_to[dt.entity.azure_region] ], sourceField:`dt.entity.azure_vm`, lookupField:id, prefix:\"azure.vm.\"\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure.vm.azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure.vm.azure_region, lookupField:id, prefix:\"azure.region.\"\n| fieldsKeep   bitPerSec,azure.vm.name, azure.subscription.name, azure.region.name\n| limit 20",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.vm.name",
+                        "valueAxis": "bitPerSec",
+                        "categoryAxisLabel": "azure.vm.name",
+                        "valueAxisLabel": "bitPerSec",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal",
+                        "max": null,
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "bitPerSec"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.vm.name",
+                        "value": "bitPerSec"
+                    },
+                    "legend": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "bitPerSec",
+                        "unitCategory": "datarate",
+                        "baseUnit": "bitps",
+                        "displayUnit": null,
+                        "decimals": 3,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1706091573859
+                    }
+                ],
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "bitPerSec",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "20": {
+            "type": "data",
+            "title": "Top VM's by outgoing network traffic",
+            "query": "timeseries sum= sum(dt.cloud.azure.vm.network.bytes_out, rate:1s),   \n by:  {dt.entity.azure_vm}\n| fieldsAdd bitPerSec = arrayMax(sum)*8\n| sort bitPerSec desc\n| lookup [fetch dt.entity.azure_vm | fieldsAdd name = entity.name, azure_subscription=accessible_by[dt.entity.azure_subscription][0],  azure_region=belongs_to[dt.entity.azure_region] ], sourceField:`dt.entity.azure_vm`, lookupField:id, prefix:\"azure.vm.\"\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure.vm.azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure.vm.azure_region, lookupField:id, prefix:\"azure.region.\"\n| fieldsKeep   bitPerSec,azure.vm.name, azure.subscription.name, azure.region.name\n| limit 20",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.vm.name",
+                        "valueAxis": "bitPerSec",
+                        "categoryAxisLabel": "azure.vm.name",
+                        "valueAxisLabel": "bitPerSec",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal"
+                    },
+                    "legend": {
+                        "hidden": true
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "bitPerSec"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.vm.name",
+                        "value": "bitPerSec"
+                    },
+                    "legend": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "bitPerSec",
+                        "unitCategory": "datarate",
+                        "baseUnit": "bitps",
+                        "displayUnit": null,
+                        "decimals": 3,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1706091731234
+                    }
+                ],
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "bitPerSec",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "21": {
+            "type": "data",
+            "title": "VM's with highest outgoing network traffic trend ",
+            "query": "timeseries sum= sum(dt.cloud.azure.vm.network.bytes_out,rate:1s),       \n by:   { dt.entity.azure_vm}\n| fieldsAdd  bitPerSec =sum[]*8\n| lookup [fetch dt.entity.azure_vm | fieldsAdd name = entity.name, azure_subscription=accessible_by[dt.entity.azure_subscription][0],  azure_region=belongs_to[dt.entity.azure_region] ], sourceField:`dt.entity.azure_vm`, lookupField:id, prefix:\"azure.vm.\"\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure.vm.azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure.vm.azure_region, lookupField:id, prefix:\"azure.region.\"\n| fieldsKeep  timeframe, bitPerSec, azure.vm.name, interval\n| sort bitPerSec desc",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "barChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "azure.vm.name",
+                        "valueAxis": "interval",
+                        "categoryAxisLabel": "azure.vm.name",
+                        "valueAxisLabel": "interval",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal"
+                    },
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "bitPerSec"
+                        ],
+                        "leftAxisDimensions": [
+                            "azure.vm.name"
+                        ],
+                        "fields": [],
+                        "values": []
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto"
+                    },
+                    "hiddenLegendFields": [
+                        "azure.vm"
+                    ]
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "azure.vm.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "azure.vm.name",
+                        "value": "azure.vm.name"
+                    },
+                    "legend": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "bitPerSec",
+                        "unitCategory": "datarate",
+                        "baseUnit": "bitps",
+                        "displayUnit": null,
+                        "decimals": 3,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1706091667605
+                    }
+                ],
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "22": {
+            "type": "data",
+            "title": "Recent DAVIS Problems",
+            "query": "fetch events\n| filter event.kind == \"DAVIS_EVENT\"  and (matchesPhrase(affected_entity_types, \"dt.entity.cloud:gcp:gce_instance\") or matchesPhrase(affected_entity_types, \"dt.entity.ec2_instance\")or matchesPhrase(affected_entity_types, \"dt.entity.azure_vm\"))\n| fieldsKeep  event.start, event.description,  event.status, affected_entity_ids\n| summarize c=count(), by: {event.start,event.status,event.description, affected_entity_ids}\n| fieldsRemove  c\n| fieldsRename  Start = event.start, Status = event.status, Description= event.description, VMs =affected_entity_ids\n| sort Start desc",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {}
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "Start"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "Status",
+                        "value": "Start"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "23": {
+            "type": "data",
+            "title": "Top 10 Virtual Machines  SKUs",
+            "query": "fetch dt.entity.azure_vm\n| parse azureVmSize, \"KVP{LD[a-zA-Z]+:key'='(LONG:valueLong | STRING:valueStr)','?}:vmsize\"\n| fieldsAdd sku =   vmsize[`label`]\n| fieldsAdd  azure_subscription = accessible_by[dt.entity.azure_subscription][0], azure_region = belongs_to[dt.entity.azure_region]\n| lookup [fetch dt.entity.azure_subscription | fieldsAdd name = entity.name ,  uuid = azureSubscriptionUuid], sourceField:azure_subscription, lookupField:id, prefix:\"azure.subscription.\" \n|  lookup [fetch dt.entity.azure_region | fieldsAdd name = entity.name], sourceField:azure_region, lookupField:id, prefix:\"azure.region.\"\n| summarize  count=count(), by: {sku}\n| sort count desc\n| limit 10",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative",
+                        "hideLabels": false
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "sku",
+                        "valueAxis": "count",
+                        "categoryAxisLabel": "sku",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "categoryAxisTickLayout": "horizontal",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "azure.subscription.name"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "columnWidths": {},
+                    "lineWrapIds": []
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "sku",
+                        "value": "count"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "visualization": "categoricalBarChart",
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "24": {
+            "type": "data",
+            "title": "Total cores",
+            "query": "fetch dt.entity.azure_vm\n| parse azureVmSize, \"KVP{LD[a-zA-Z]+:key'='(LONG:valueLong | STRING:valueStr)','?}:vmsize\"\n| fieldsAdd cores =   vmsize[`numCores`], memoryMb =   vmsize[`memoryMb`]\n| summarize Cores = sum(cores)",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {}
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "Cores",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {}
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "Cores",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "25": {
+            "type": "data",
+            "title": "Total memory",
+            "query": "fetch dt.entity.azure_vm\n| parse azureVmSize, \"KVP{LD[a-zA-Z]+:key'='(LONG:valueLong | STRING:valueStr)','?}:vmsize\"\n| fieldsAdd cores =   vmsize[`numCores`], memoryMb =   vmsize[`memoryMb`]\n| summarize MemoryGB = sum(memoryMb)/1024",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {}
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "MemoryGB",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {}
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "MemoryGB",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "26": {
+            "type": "data",
+            "title": "VM count",
+            "query": "fetch dt.entity.azure_vm\n| parse azureVmSize, \"KVP{LD[a-zA-Z]+:key'='(LONG:valueLong | STRING:valueStr)','?}:vmsize\"\n| fieldsAdd cores =   vmsize[`numCores`], memoryMb =   vmsize[`memoryMb`]\n| summarize count()",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {}
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "count()",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {}
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {}
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        },
+        "27": {
+            "type": "data",
+            "title": "Recent Azure health events",
+            "query": "fetch logs //, scanLimitGBytes: 500, samplingRatio: 1000\n| filter matchesValue(cloud.provider, \"Azure\")\n| filter azure.resource.type == \"MICROSOFT.COMPUTE/VIRTUALMACHINES\" or azure.resource.type == \"MICROSOFT.COMPUTE/VIRTUALMACHINESCALESETS/VIRTUALMACHINES\"\n| parse content, \"JSON:json\"\n| fieldsAdd operationName=json[operationName], \ncategory=json[category], \nresultType=json[resultType], \ncallerIpAddress=json[callerIpAddress], \naction=json[identity][authorization][action] ,\nprincipalId=json[identity][authorization][evidence][principalId] ,\nprincipalType=json[identity][authorization][evidence][principalType] ,\nname=coalesce(json[identity][claims][name],json[identity][claims][xms_mirid]),\ntime= json[time],\ntitle=json[properties][title],\ndetails=json[properties][details],\ncurrent=json[properties][currentHealthStatus],\nprevious=json[properties][previoustHealthStatus],\ntype=json[properties][type],\ncause=json[properties][cause]\n| filter  category== \"ResourceHealth\" \n| fieldsKeep  time, title, details, type, cause, azure.resource.name\n| sort  time desc",
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {}
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "recordField": "Start"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {
+                        "[\"details\"]": 382,
+                        "[\"time\"]": 143.41250610351562,
+                        "[\"title\"]": 186.2624969482422
+                    }
+                },
+                "honeycomb": {
+                    "shape": "square",
+                    "dataMappings": {
+                        "category": "time",
+                        "value": "title"
+                    },
+                    "legend": "auto"
+                },
+                "histogram": {
+                    "dataMappings": []
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            }
+        }
+    },
+    "layouts": {
+        "0": {
+            "x": 0,
+            "y": 54,
+            "w": 10,
+            "h": 4
+        },
+        "2": {
+            "x": 0,
+            "y": 53,
+            "w": 16,
+            "h": 1
+        },
+        "3": {
+            "x": 10,
+            "y": 54,
+            "w": 10,
+            "h": 4
+        },
+        "4": {
+            "x": 0,
+            "y": 5,
+            "w": 12,
+            "h": 1
+        },
+        "5": {
+            "x": 0,
+            "y": 8,
+            "w": 10,
+            "h": 4
+        },
+        "6": {
+            "x": 10,
+            "y": 8,
+            "w": 10,
+            "h": 4
+        },
+        "7": {
+            "x": 0,
+            "y": 41,
+            "w": 12,
+            "h": 1
+        },
+        "8": {
+            "x": 0,
+            "y": 42,
+            "w": 10,
+            "h": 4
+        },
+        "9": {
+            "x": 10,
+            "y": 37,
+            "w": 10,
+            "h": 4
+        },
+        "10": {
+            "x": 0,
+            "y": 16,
+            "w": 10,
+            "h": 7
+        },
+        "11": {
+            "x": 0,
+            "y": 46,
+            "w": 10,
+            "h": 7
+        },
+        "12": {
+            "x": 0,
+            "y": 58,
+            "w": 10,
+            "h": 7
+        },
+        "13": {
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1
+        },
+        "14": {
+            "x": 0,
+            "y": 1,
+            "w": 7,
+            "h": 4
+        },
+        "15": {
+            "x": 10,
+            "y": 16,
+            "w": 10,
+            "h": 7
+        },
+        "16": {
+            "x": 10,
+            "y": 42,
+            "w": 10,
+            "h": 7
+        },
+        "17": {
+            "x": 10,
+            "y": 58,
+            "w": 10,
+            "h": 7
+        },
+        "18": {
+            "x": 10,
+            "y": 23,
+            "w": 10,
+            "h": 7
+        },
+        "19": {
+            "x": 0,
+            "y": 23,
+            "w": 10,
+            "h": 7
+        },
+        "20": {
+            "x": 0,
+            "y": 30,
+            "w": 10,
+            "h": 7
+        },
+        "21": {
+            "x": 10,
+            "y": 30,
+            "w": 10,
+            "h": 7
+        },
+        "22": {
+            "x": 7,
+            "y": 1,
+            "w": 13,
+            "h": 4
+        },
+        "23": {
+            "x": 0,
+            "y": 12,
+            "w": 10,
+            "h": 4
+        },
+        "24": {
+            "x": 4,
+            "y": 6,
+            "w": 4,
+            "h": 2
+        },
+        "25": {
+            "x": 8,
+            "y": 6,
+            "w": 4,
+            "h": 2
+        },
+        "26": {
+            "x": 0,
+            "y": 6,
+            "w": 4,
+            "h": 2
+        },
+        "27": {
+            "x": 10,
+            "y": 12,
+            "w": 10,
+            "h": 4
+        }
+    },
+    "importedWithCode": false
+}
