@@ -17,7 +17,7 @@ Follow these steps to create the AWS ECR Event Forwarder with Infrastructure as 
 
 ### 1. Set up secret with OpenPipeline Api-Token
 
-Replace the Api-Token in the following command with a valid [access token](https://docs.dynatrace.com/docs/manage/access-control/access-tokens) that has the `open-pipeline.ingest.events.security` token scope:
+Replace the Api-Token in the following command with a valid [access token](https://docs.dynatrace.com/docs/manage/access-control/access-tokens) that has the `openpipeline.events_security` token scope:
 
 ```bash
 aws secretsmanager create-secret \
