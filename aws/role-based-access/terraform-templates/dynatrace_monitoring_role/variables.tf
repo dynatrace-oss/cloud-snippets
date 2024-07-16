@@ -1,9 +1,3 @@
-variable "region" {
-  description = "The region where policy will be created"
-  type        = string
-  default     = "us-east-1"
-}
-
 variable "external_id" {
   description = "External ID, copied from Settings > Cloud and virtualization > AWS in Dynatrace"
   type        = string
