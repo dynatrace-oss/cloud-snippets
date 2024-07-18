@@ -1,17 +1,3 @@
-terraform {
-  required_version = ">=1.7"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = var.region
-}
-
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "active_gate_role_assume_role_policy_document" {

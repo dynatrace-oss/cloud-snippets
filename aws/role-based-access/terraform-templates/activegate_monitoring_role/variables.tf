@@ -1,9 +1,3 @@
-variable "region" {
-  description = "The region where policy will be created"
-  type        = string
-  default     = "us-east-1"
-}
-
 variable "active_gate_role_name" {
   description = "IAM role name for the account hosting the ActiveGate for monitoring. This must be the same name as the ActiveGate_role_name parameter used in the template for the monitored account."
   type        = string

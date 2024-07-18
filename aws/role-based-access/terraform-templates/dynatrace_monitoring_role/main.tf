@@ -1,20 +1,4 @@
-terraform {
-  required_version = ">=1.7"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = var.region
-}
-
 data "aws_caller_identity" "current" {}
-
-
 
 locals {
   principals_identifiers = var.active_gate_account_id == null || var.active_gate_role_name == null ? [

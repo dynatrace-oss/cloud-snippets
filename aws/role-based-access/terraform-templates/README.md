@@ -26,7 +26,6 @@ The deployment with no ActiveGate can be done by using the [dynatrace_monitoring
 
 You need to specify the following arguments:
 
-* `region`: The region where policy will be created
 * `external_id`: External ID, copied from Settings > Cloud and virtualization > AWS in Dynatrace
 * `role_name`: IAM role name that Dynatrace should use to get monitoring data. This must be the same name as the monitoring_role_name parameter used in the template for the account hosting the ActiveGate.
 * `policy_name`: IAM policy name attached to the role
@@ -36,7 +35,6 @@ You need to specify the following arguments:
 
 You can prepare a `.tfvars` with your arguments. For instance:
 ```hcl
-region               = "east-us-1"
 monitored_account_id = "999999999999"
 assume_policy_name   = "sample_dynatrace_assume_policy"
 monitoring_role_name = "sample_dynatrace_monitoring_role"
@@ -57,7 +55,6 @@ To configure a deployment with an existing ActiveGate, you should use two Terraf
 #### Create a role for ActiveGate on the account that hosts ActiveGate
 
 You can use [activegate_monitoring_role](./activegate_monitoring_role/) specifying the following arguments:
-* `region`: The region where you want to create the policy
 * `active_gate_role_name`: IAM role name for the account hosting the ActiveGate for monitoring. This role name must be the same as the ActiveGate_role_name parameter used in the template for the monitored account.
 * `assume_policy_name`:  IAM policy name attached to the role for the account hosting the ActiveGate
 * `monitoring_role_name`: IAM role name that Dynatrace should use to get monitoring data. This role must be the same name as the RoleName parameter used in the template for the monitored account.
@@ -66,7 +63,6 @@ You can use [activegate_monitoring_role](./activegate_monitoring_role/) specifyi
 Now you can prepare a `.tfvars` file with the following arguments:
 
 ```hcl
-region                = "east-us-1"
 active_gate_role_name = "dynatrace_ag_role_name"
 assume_policy_name    = "dynatrace_assume_policy"
 monitoring_role_name  = "dynatrace_monitoring_role"
@@ -83,7 +79,6 @@ terraform apply -var-file="my_variables.tfvars"
 
 To create the monitoring role, you can use [dynatrace_monitoring_role](./dynatrace_monitoring_role/) module. You need to specify the following arguments:
 
-* `region`: The region where policy will be created
 * `external_id`: External ID, copied from Settings > Cloud and virtualization > AWS in Dynatrace
 * `role_name`: IAM role name that Dynatrace should use to get monitoring data. This must be the same name as the monitoring_role_name parameter used in the template for the account hosting the ActiveGate.
 * `policy_name`: IAM policy name attached to the role
@@ -92,7 +87,6 @@ To create the monitoring role, you can use [dynatrace_monitoring_role](./dynatra
 
 Now you can prepare a `.tfvars` file with the following arguments:
 ```hcl
-region                 = "east-us-1"
 monitored_account_id   = "999999999999"
 assume_policy_name     = "sample_dynatrace_assume_policy"
 monitoring_role_name   = "sample_dynatrace_monitoring_role"
@@ -104,4 +98,23 @@ Now, you can execute the following Terraform commands to apply the configuration
 ```bash
 terraform init
 terraform apply -var-file="my_variables.tfvars"
+```
+
+### Set the region
+
+By default, AWS will create the resources in your default region. If you want to specify the region you can configure the AWS provider. For that include the following in your Terraform template:
+```hcl
+terraform {
+  required_version = ">=1.7"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region
+}
 ```
