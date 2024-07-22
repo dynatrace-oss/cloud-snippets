@@ -1,0 +1,192 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Template for Dynatrace AWS Image Scan Event Forwarder - Enhanced Scanning.
+
+Metadata:
+  License:
+    Description: |
+      Copyright 2024 Dynatrace LLC
+
+      Licensed under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License.
+      You may obtain a copy of the License at
+
+          https://www.apache.org/licenses/LICENSE-2.0
+
+      Unless required by applicable law or agreed to in writing, software
+      distributed under the License is distributed on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      See the License for the specific language governing permissions and
+      limitations under the License.
+
+Parameters:
+  AwsSecretArn:
+    Description: Arn of the created secret upfront.
+    Type: String
+
+  AwsSecretKeyName:
+    Description: Name of the secret key.
+    Default: "DYNATRACE_OPENPIPELINE_INGEST_API_TOKEN"
+    Type: String
+
+  AwsInspectorResourceTypes:
+    Description: Defines for which resource types the lambda function sends events to Dynatrace. Multiple resource types can be provided with a comma separated list.
+    Default: "AWS_ECR_CONTAINER_IMAGE"
+    Type: String
+
+  DynatraceDomain:
+    Description: Domain of your Dynatrace instance e.g. ab12345.live.dynatrace.com
+    Type: String
+
+  DynatraceOpenPipelineEndpointPath:
+    Description: Path of the OpenPipeline security endpoint.
+    Default: "/platform/ingest/v1/events.security"
+    Type: String
+
+Resources:
+  DynatraceEventForwarderEnhancedLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: dynatrace-aws-event-forwarder-enhanced-lambda-role
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Path: /
+      Policies:
+        - PolicyName: "dynatrace-aws-event-forwarder-enhanced-read-dynatrace-secret-token"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "secretsmanager:GetSecretValue"
+                Resource: !Ref AwsSecretArn
+                Sid: "VisualEditor0"
+
+  DynatraceEventForwarderEnhancedLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: dynatrace-aws-event-forwarder-enhanced-lambda
+      Description: Dynatrace AWS event forwarder enhanced lambda function.
+      TracingConfig:
+        Mode: "PassThrough"
+      Runtime: python3.12
+      Code:
+        ZipFile: |
+          import http.client
+          import json
+          import boto3
+          import copy
+          import os
+
+          AWS_SECRET_ARN = os.environ["AWS_SECRET_ARN"]
+          AWS_SECRET_KEY_NAME = os.environ["AWS_SECRET_KEY_NAME"]
+
+          DYNATRACE_DOMAIN = os.environ["DYNATRACE_DOMAIN"]
+          DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH = os.environ["DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH"]
+
+          def lambda_handler(event, context):
+              try:
+                  # get token from secret manager
+                  token = get_token_secret()
+
+                  process_finding(event, token)
+
+                  return {
+                      "statusCode": 200,
+                      "body": json.dumps("Executed OpenPipeline security event export")
+                  }
+              except Exception as e:
+                  print(f'Error executing OpenPipeline security event export: {str(e)}')
+
+                  return {
+                      'statusCode': 500,
+                      'body': 'Error executing OpenPipeline security event export'
+                  }
+
+          def get_token_secret():
+              # Create a Secrets Manager client
+              session = boto3.session.Session()
+              client = session.client(
+                  service_name="secretsmanager"
+              )
+
+              get_secret_value_response = client.get_secret_value(
+                  SecretId=AWS_SECRET_ARN
+              )
+
+              # json string containing the secret
+              secret_json = get_secret_value_response["SecretString"]
+              secret_dict = json.loads(secret_json)
+
+              return secret_dict[AWS_SECRET_KEY_NAME]
+
+          def process_finding(event, token):
+              process_entries = []
+              for vulnerablePackage in event.get("detail").get("packageVulnerabilityDetails").get("vulnerablePackages"):
+                  processed_entry = copy.deepcopy(event)
+                  processed_entry["detail"]["packageVulnerabilityDetails"]["vulnerablePackages"] = [vulnerablePackage]
+
+                  process_entries.append(processed_entry)
+
+              json_string = json.dumps(process_entries, default=str)
+              send_data_to_pipeline(json_string, token)
+
+          def send_data_to_pipeline(data, token):
+              conn = http.client.HTTPSConnection(DYNATRACE_DOMAIN)
+
+              headers = {
+                  "Authorization": "Api-Token " + token,
+                  "Content-Type": "application/json",
+              }
+
+              conn.request("POST", DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH, body=data, headers=headers)
+              response = conn.getresponse()
+
+              if response.status > 299:
+                  print(f"Error sending sending data to OpenPipeline, response status is: {str(response.status)}")
+      Handler: "index.lambda_handler"
+      MemorySize: 128
+      Timeout: 600
+      Role: !GetAtt DynatraceEventForwarderEnhancedLambdaRole.Arn
+      Environment:
+        Variables:
+          AWS_SECRET_ARN: !Ref AwsSecretArn
+          AWS_SECRET_KEY_NAME: !Ref AwsSecretKeyName
+          DYNATRACE_DOMAIN: !Ref DynatraceDomain
+          DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH: !Ref DynatraceOpenPipelineEndpointPath
+
+  DynatraceEventForwarderEnhancedEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Forwards the Inspector2 finding events (Enhanced scanning) to the Dynatrace enhanced lambda function, which sends it to OpenPipeline"
+      EventPattern:
+        detail-type:
+          - "Inspector2 Finding"
+        detail:
+          status:
+            - "ACTIVE"
+          resources:
+            type: !Split [",", !Ref AwsInspectorResourceTypes]
+        source:
+          - "aws.inspector2"
+      EventBusName: "default"
+      Targets:
+        - Arn: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
+          Id: "TargetFunction"
+
+  DynatraceEventForwarderLambdaEnhancedPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DynatraceEventForwarderEnhancedEventRule.Arn
