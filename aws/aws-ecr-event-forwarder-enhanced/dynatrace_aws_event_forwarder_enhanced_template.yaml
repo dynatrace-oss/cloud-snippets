@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: Template for Dynatrace AWS ECR Image Scan Event Forwarder.
+Description: Template for Dynatrace AWS Image Scan Event Forwarder - Enhanced Scanning.
 
 Metadata:
   License:
@@ -29,6 +29,11 @@ Parameters:
     Default: "DYNATRACE_OPENPIPELINE_INGEST_API_TOKEN"
     Type: String
 
+  AwsInspectorResourceTypes:
+    Description: Defines for which resource types the lambda function sends events to Dynatrace. Multiple resource types can be provided with a comma separated list.
+    Default: "AWS_ECR_CONTAINER_IMAGE"
+    Type: String
+
   DynatraceDomain:
     Description: Domain of your Dynatrace instance e.g. ab12345.live.dynatrace.com
     AllowedPattern: "^[A-Za-z0-9]+\\.live\\.dynatrace\\.com"
@@ -37,14 +42,14 @@ Parameters:
 
   DynatraceOpenPipelineEndpointPath:
     Description: Path of the OpenPipeline security endpoint.
-    Default: "/platform/ingest/v1/events.security?type=container_finding&provider_product=aws_ecr"
+    Default: "/platform/ingest/v1/events.security"
     Type: String
 
 Resources:
-  DynatraceECREventForwarderLambdaRole:
+  DynatraceEventForwarderEnhancedLambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: dynatrace-aws-ecr-event-forwarder-lambda-role
+      RoleName: dynatrace-aws-event-forwarder-enhanced-lambda-role
       AssumeRolePolicyDocument:
         Statement:
           - Action:
@@ -58,16 +63,7 @@ Resources:
         - arn:aws:iam::aws:policy/AWSLambdaExecute
       Path: /
       Policies:
-        - PolicyName: "read-ecr-image-scans"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "ecr:DescribeImageScanFindings"
-                Resource: !Sub "arn:aws:ecr:*:${AWS::AccountId}:repository/*"
-                Sid: "VisualEditor0"
-        - PolicyName: "read-dynatrace-secret-token"
+        - PolicyName: "dynatrace-aws-event-forwarder-enhanced-read-dynatrace-secret-token"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -77,11 +73,11 @@ Resources:
                 Resource: !Ref AwsSecretArn
                 Sid: "VisualEditor0"
 
-  DynatraceECREventForwarderLambdaFunction:
+  DynatraceEventForwarderEnhancedLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: dynatrace-aws-ecr-event-forwarder-lambda
-      Description: Dynatrace AWS ECR Image Scan event forwarder Lambda function.
+      FunctionName: dynatrace-aws-event-forwarder-enhanced-lambda
+      Description: Dynatrace AWS event forwarder enhanced lambda function.
       TracingConfig:
         Mode: "PassThrough"
       Runtime: python3.12
@@ -104,24 +100,11 @@ Resources:
                   # get token from secret manager
                   token = get_token_secret()
 
-                  # get event information, from the EventBridge
-                  image_digest = event["detail"]["image-digest"]
-                  repo_name = event["detail"]["repository-name"]
-                  repo_region = event["region"]
-                  image_tags = event["detail"]["image-tags"]
-
-                  scan_results = get_scan_findings(image_digest, repo_name, "")
-                  process_scan_results(scan_results, repo_region, image_tags, token)
-                  next_token = scan_results.get("nextToken")
-
-                  while next_token:
-                      scan_results = get_scan_findings(image_digest, repo_name, next_token)
-                      process_scan_results(scan_results, repo_region, image_tags, token)
-                      next_token = scan_results.get("nextToken")
+                  process_finding(event, token)
 
                   return {
                       "statusCode": 200,
-                      "body": "Executed OpenPipeline security event export"
+                      "body": json.dumps("Executed OpenPipeline security event export")
                   }
               except Exception as e:
                   print(f'Error executing OpenPipeline security event export: {str(e)}')
@@ -130,51 +113,6 @@ Resources:
                       'statusCode': 500,
                       'body': 'Error executing OpenPipeline security event export'
                   }
-
-          def process_scan_results(scan_results, repo_region, image_tags, token):
-              process_entries = []
-              for finding in scan_results.get("imageScanFindings").get("findings"):
-                  processed_entry = copy.deepcopy(scan_results)
-                  processed_entry["imageScanFindings"]["findings"] = [finding]
-                  processed_entry["region"] = repo_region
-                  processed_entry["image-tags"] = image_tags
-
-                  process_entries.append(processed_entry)
-
-              json_string = json.dumps(process_entries, default=str)
-              send_data_to_pipeline(json_string, token)
-
-          def get_scan_findings(image_digest, repository_name, next_token):
-              ecr_client = boto3.client("ecr")
-              response = ""
-
-              if next_token != "":
-                  response = ecr_client.describe_image_scan_findings(
-                      repositoryName=repository_name,
-                      imageId={"imageDigest": image_digest},
-                      nextToken=next_token
-                  )
-              else:
-                  response = ecr_client.describe_image_scan_findings(
-                      repositoryName=repository_name,
-                      imageId={"imageDigest": image_digest}
-                  )
-
-              return response
-
-          def send_data_to_pipeline(data, token):
-              conn = http.client.HTTPSConnection(DYNATRACE_DOMAIN)
-
-              headers = {
-                  "Authorization": "Api-Token " + token,
-                  "Content-Type": "application/json",
-              }
-              
-              conn.request("POST", DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH, body=data, headers=headers)
-              response = conn.getresponse()
-
-              if response.status > 299:
-                print(f"Error sending sending data to OpenPipeline, response status is: {str(response.status)}")
 
           def get_token_secret():
               # Create a Secrets Manager client
@@ -192,10 +130,35 @@ Resources:
               secret_dict = json.loads(secret_json)
 
               return secret_dict[AWS_SECRET_KEY_NAME]
+
+          def process_finding(event, token):
+              process_entries = []
+              for vulnerablePackage in event.get("detail").get("packageVulnerabilityDetails").get("vulnerablePackages"):
+                  processed_entry = copy.deepcopy(event)
+                  processed_entry["detail"]["packageVulnerabilityDetails"]["vulnerablePackages"] = [vulnerablePackage]
+
+                  process_entries.append(processed_entry)
+
+              json_string = json.dumps(process_entries, default=str)
+              send_data_to_pipeline(json_string, token)
+
+          def send_data_to_pipeline(data, token):
+              conn = http.client.HTTPSConnection(DYNATRACE_DOMAIN)
+
+              headers = {
+                  "Authorization": "Api-Token " + token,
+                  "Content-Type": "application/json",
+              }
+
+              conn.request("POST", DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH, body=data, headers=headers)
+              response = conn.getresponse()
+
+              if response.status > 299:
+                  print(f"Error sending sending data to OpenPipeline, response status is: {str(response.status)}")
       Handler: "index.lambda_handler"
       MemorySize: 128
       Timeout: 600
-      Role: !GetAtt DynatraceECREventForwarderLambdaRole.Arn
+      Role: !GetAtt DynatraceEventForwarderEnhancedLambdaRole.Arn
       Environment:
         Variables:
           AWS_SECRET_ARN: !Ref AwsSecretArn
@@ -203,24 +166,29 @@ Resources:
           DYNATRACE_DOMAIN: !Ref DynatraceDomain
           DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH: !Ref DynatraceOpenPipelineEndpointPath
 
-  DynatraceECREventForwarderEventRule:
+  DynatraceEventForwarderEnhancedEventRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: "Forwards the event for a completed ECR Image Scan automatically to the lambda function, which sends it to OpenPipeline"
+      Description: "Forwards the Inspector2 finding events (Enhanced scanning) to the Dynatrace enhanced lambda function, which sends it to OpenPipeline"
       EventPattern:
         detail-type:
-          - "ECR Image Scan"
+          - "Inspector2 Finding"
+        detail:
+          status:
+            - "ACTIVE"
+          resources:
+            type: !Split [",", !Ref AwsInspectorResourceTypes]
         source:
-          - "aws.ecr"
+          - "aws.inspector2"
       EventBusName: "default"
       Targets:
-        - Arn: !GetAtt DynatraceECREventForwarderLambdaFunction.Arn
+        - Arn: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
           Id: "TargetFunction"
 
-  DynatraceECREventForwarderLambdaPermission:
+  DynatraceEventForwarderLambdaEnhancedPermission:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt DynatraceECREventForwarderLambdaFunction.Arn
+      FunctionName: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt DynatraceECREventForwarderEventRule.Arn
+      SourceArn: !GetAtt DynatraceEventForwarderEnhancedEventRule.Arn
