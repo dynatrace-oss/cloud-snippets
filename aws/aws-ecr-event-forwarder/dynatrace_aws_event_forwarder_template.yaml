@@ -31,6 +31,8 @@ Parameters:
 
   DynatraceDomain:
     Description: Domain of your Dynatrace instance e.g. ab12345.live.dynatrace.com
+    AllowedPattern: "^[A-Za-z0-9]+\\.live\\.dynatrace\\.com"
+    ConstraintDescription: "Malformed input-Parameter DynatraceDomain must match pattern {your-environment-id}.live.dynatrace.com"
     Type: String
 
   DynatraceOpenPipelineEndpointPath:
