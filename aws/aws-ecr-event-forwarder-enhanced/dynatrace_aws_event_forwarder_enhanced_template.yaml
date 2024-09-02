@@ -99,8 +99,14 @@ Resources:
               try:
                   # get token from secret manager
                   token = get_token_secret()
+                  detail_type = event.get("detail-type")
 
-                  process_finding(event, token)
+                  if detail_type == "Inspector2 Finding":
+                      process_finding(event, token)
+                  elif detail_type == "Inspector2 Scan":
+                      process_scan(event, token)
+                  else:
+                      raise Exception(f'Unsupported detail-type: "{str(detail_type)}"')
 
                   return {
                       "statusCode": 200,
@@ -142,6 +148,10 @@ Resources:
               json_string = json.dumps(process_entries, default=str)
               send_data_to_pipeline(json_string, token)
 
+          def process_scan(event, token):
+              json_string = json.dumps(event, default=str)
+              send_data_to_pipeline(json_string, token)
+
           def send_data_to_pipeline(data, token):
               conn = http.client.HTTPSConnection(DYNATRACE_DOMAIN)
 
@@ -166,7 +176,7 @@ Resources:
           DYNATRACE_DOMAIN: !Ref DynatraceDomain
           DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH: !Ref DynatraceOpenPipelineEndpointPath
 
-  DynatraceEventForwarderEnhancedEventRule:
+  DynatraceEventForwarderEnhancedFindingEventRule:
     Type: AWS::Events::Rule
     Properties:
       Description: "Forwards the Inspector2 finding events (Enhanced scanning) to the Dynatrace enhanced lambda function, which sends it to OpenPipeline"
@@ -185,10 +195,37 @@ Resources:
         - Arn: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
           Id: "TargetFunction"
 
-  DynatraceEventForwarderLambdaEnhancedPermission:
+  DynatraceEventForwarderEnhancedScanEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Forwards the Inspector2 scan events (Enhanced scanning) to the Dynatrace enhanced lambda function, which sends it to OpenPipeline"
+      EventPattern:
+        detail-type:
+          - "Inspector2 Scan"
+        detail:
+          scan-status:
+            - "INITIAL_SCAN_COMPLETE"
+          image-digest:
+            - exists: true
+        source:
+          - "aws.inspector2"
+      EventBusName: "default"
+      Targets:
+        - Arn: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
+          Id: "TargetFunction"
+
+  DynatraceEventForwarderLambdaEnhancedFindingPermission:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
       Principal: events.amazonaws.com
-      SourceArn: !GetAtt DynatraceEventForwarderEnhancedEventRule.Arn
+      SourceArn: !GetAtt DynatraceEventForwarderEnhancedFindingEventRule.Arn
+
+  DynatraceEventForwarderLambdaEnhancedScanPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt DynatraceEventForwarderEnhancedLambdaFunction.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DynatraceEventForwarderEnhancedScanEventRule.Arn
