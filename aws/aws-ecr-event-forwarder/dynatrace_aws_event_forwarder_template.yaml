@@ -104,6 +104,8 @@ Resources:
                   # get token from secret manager
                   token = get_token_secret()
 
+                  send_scan_complete_event_to_pipeline(event, token)
+
                   # get event information, from the EventBridge
                   image_digest = event["detail"]["image-digest"]
                   repo_name = event["detail"]["repository-name"]
@@ -162,7 +164,7 @@ Resources:
 
               return response
 
-          def send_data_to_pipeline(data, token):
+          def send_data_to_pipeline(data, token, path=DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH):
               conn = http.client.HTTPSConnection(DYNATRACE_DOMAIN)
 
               headers = {
@@ -170,7 +172,7 @@ Resources:
                   "Content-Type": "application/json",
               }
               
-              conn.request("POST", DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH, body=data, headers=headers)
+              conn.request("POST", path, body=data, headers=headers)
               response = conn.getresponse()
 
               if response.status > 299:
@@ -192,6 +194,12 @@ Resources:
               secret_dict = json.loads(secret_json)
 
               return secret_dict[AWS_SECRET_KEY_NAME]
+
+          def send_scan_complete_event_to_pipeline(event, token):
+              event_json = json.dumps(event)
+              pipeline_path_without_query = DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT_PATH.split("?")[0]
+
+              send_data_to_pipeline(event_json, token, pipeline_path_without_query)
       Handler: "index.lambda_handler"
       MemorySize: 128
       Timeout: 600

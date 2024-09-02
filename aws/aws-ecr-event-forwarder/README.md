@@ -1,6 +1,6 @@
 # AWS Event Forwarder Lambda - Basic scanning
 
-This folder contains an [AWS Cloud Formation](https://aws.amazon.com/cloudformation/) template, which sets up necessary resources in AWS to forward AWS Elastic Container Registry (ECR) container vulnerability findings for [basic scanning](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-basic.html) to the Dynatrace OpenPipeline security event ingest endpoint.
+This folder contains an [AWS Cloud Formation](https://aws.amazon.com/cloudformation/) template, which sets up necessary resources in AWS to forward AWS Elastic Container Registry (ECR) container vulnerability findings and scan events for [basic scanning](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-basic.html) to the Dynatrace OpenPipeline security event ingest endpoint.
 
 More details can be found in the official documentation:
 
@@ -11,7 +11,13 @@ Follow these steps to create the AWS ECR Event Forwarder with Infrastructure as 
 
 ### 0. Prerequisites
 
-- Dynatrace version 1.296+
+- Dynatrace version
+
+  | Feature                | Version |
+  | ---------------------- | ------- |
+  | vulnerability findings | 1.296+  |
+  | scan events            | 1.301+  |
+
 - Make sure to install and configure the [latest AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 - In a terminal, enter `aws configure` and set `us-east-1` (or your preferred region) as the default region for setting up all resources.
 
