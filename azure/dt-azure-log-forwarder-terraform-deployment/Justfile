@@ -1,0 +1,55 @@
+set windows-shell := ["powershell.exe", "-c"]
+
+
+[unix]
+all: landingpage module documentation-info footer
+
+[windows]
+all: landingpage module documentation-info footer enforce_powershell_output_ASCII_encoding
+
+landingpage:
+    echo '## Azure Audit Log Forwarder' > README.md
+    echo '' >> readme.md
+
+module: module-header module-logfw module-logfw-infrastructure module-logfw-services module-footer
+
+module-header:
+    echo '### Modules' >> readme.md
+
+module-logfw:
+    echo "- dt-log-forwarder">> readme.md
+
+module-logfw-infrastructure:
+    echo '# Module: dt-log-forwarder/services' > _modules/dt-log-forwarder/infrastructure/readme.md
+    echo '' >> _modules/dt-log-forwarder/infrastructure/readme.md
+    terraform-docs markdown table _modules/dt-log-forwarder/infrastructure >> _modules/dt-log-forwarder/infrastructure/readme.md
+    echo '  - [infrastructure](_modules/dt-log-forwarder/infrastructure/readme.md)' >> readme.md
+
+module-logfw-services:
+    echo '  - [services](_modules/dt-log-forwarder/services/readme.md)' >> readme.md
+
+module-footer:
+    echo '' >> readme.md
+    echo '> This contains information about the input and output variables.' >> readme.md
+    echo '' >> readme.md
+    echo '---' >> readme.md
+
+footer:
+    echo '[How-To: Create Doc](_doc/documentation.md)' >> readme.md
+
+documentation-info:
+    echo '## How-To: Create the Documentation' > _doc/documentation.md
+    echo '' >> _doc/documentation.md
+    echo '## Documentation Techstack' >> _doc/documentation.md
+    echo '* [just](https://github.com/casey/just)' >> _doc/documentation.md
+    echo '* [terraform-docs](https://github.com/terraform-docs/terraform-docs)' >> _doc/documentation.md
+    echo '## Create Documentation' >> _doc/documentation.md
+    echo 'Execute the `just` command in the root directory' >> _doc/documentation.md
+
+
+enforce_powershell_output_ASCII_encoding:
+    (Get-Content readme.md) | out-file -encoding ASCII readme.md
+    (Get-Content _modules/dt-log-forwarder/infrastructure/readme.md) | out-file -encoding ASCII _modules/dt-log-forwarder/infrastructure/readme.md
+    (Get-Content _doc/documentation.md) | out-file -encoding ASCII _doc/documentation.md
+
+
