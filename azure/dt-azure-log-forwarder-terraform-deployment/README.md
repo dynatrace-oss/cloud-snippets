@@ -2,8 +2,9 @@
 
 ### Modules
 - dt-log-forwarder
-  - [infrastructure](_modules/dt-log-forwarder/infrastructure/readme.md)
-  - [services](_modules/dt-log-forwarder/services/readme.md)
+  - [infrastructure](modules/infrastructure/function/readme.md)
+  - [infrastructure](modules/infrastructure/storage-blob/readme.md)
+  - [services](modules/services/readme.md)
 
 > This contains information about the input and output variables.
 

@@ -1,19 +1,19 @@
-resource "azurerm_service_plan" "this" {
+resource "azurerm_service_plan" "service_plan" {
   name                = "${var.deployment_name}-plan"
-  resource_group_name = azurerm_resource_group.this.name
+  resource_group_name = var.resource_group
   location            = var.location
   os_type             = "Linux"
-  sku_name            = "S1"
+  sku_name            = "P1v3"
 }
 
-resource "azurerm_linux_function_app" "this" {
+resource "azurerm_linux_function_app" "application" {
   name                = "${var.deployment_name}-func"
-  resource_group_name = azurerm_resource_group.this.name
+  resource_group_name = var.resource_group
   location            = var.location
 
-  storage_account_name       = azurerm_storage_account.this.name
-  storage_account_access_key = azurerm_storage_account.this.primary_access_key
-  service_plan_id            = azurerm_service_plan.this.id
+  storage_account_name  = var.storage_account_name
+  storage_account_access_key   = var.storage_account_access_key
+  service_plan_id             = azurerm_service_plan.service_plan.id
 
   app_settings = {
     "DYNATRACE_URL" = var.dynatrace_url

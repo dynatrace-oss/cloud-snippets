@@ -49,3 +49,19 @@ variable "require_valid_certificate" {
   type = bool
   nullable = false
 }
+
+variable "resource_group" {
+  type        = string
+  description = "The resource group"
+  default     = ""
+}
+
+variable "storage_account_name" {
+  type        = string
+  description = "The name of the Azure Storage account"
+}
+
+variable "storage_account_access_key" {
+  type        = string
+  description = "The access key of the Azure Storage account"
+}
