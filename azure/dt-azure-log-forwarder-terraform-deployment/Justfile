@@ -23,13 +23,13 @@ module-logfw-infrastructure-function:
     echo '# Module: dt-log-forwarder/infrastructure/function' > modules/infrastructure/function/readme.md
     echo '' >> modules/infrastructure/function/readme.md
     terraform-docs markdown table modules/infrastructure/function >> modules/infrastructure/function/readme.md
-    echo '  - [infrastructure](modules/infrastructure/function/readme.md)' >> readme.md
+    echo '  - [infrastructure-function](modules/infrastructure/function/readme.md)' >> readme.md
 
 module-logfw-infrastructure-storage:
     echo '# Module: dt-log-forwarder/infrastructure/storage-blob' > modules/infrastructure/storage-blob/readme.md
     echo '' >> modules/infrastructure/storage-blob/readme.md
     terraform-docs markdown table modules/infrastructure/storage-blob >> modules/infrastructure/storage-blob/readme.md
-    echo '  - [infrastructure](modules/infrastructure/storage-blob/readme.md)' >> readme.md
+    echo '  - [infrastructure-storage](modules/infrastructure/storage-blob/readme.md)' >> readme.md
 
 module-logfw-services:
     echo '  - [services](modules/services/readme.md)' >> readme.md
