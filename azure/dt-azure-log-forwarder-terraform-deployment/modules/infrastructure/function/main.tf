@@ -11,16 +11,16 @@ resource "azurerm_linux_function_app" "application" {
   resource_group_name = var.resource_group
   location            = var.location
 
-  storage_account_name  = var.storage_account_name
-  storage_account_access_key   = var.storage_account_access_key
-  service_plan_id             = azurerm_service_plan.service_plan.id
+  storage_account_name       = var.storage_account_name
+  storage_account_access_key = var.storage_account_access_key
+  service_plan_id            = azurerm_service_plan.service_plan.id
 
   app_settings = {
-    "DYNATRACE_URL" = var.dynatrace_url
-    "DYNATRACE_ACCESS_KEY" = var.dynatrace_access_key
-    "REQUIRE_VALID_CERTIFICATE" = var.require_valid_certificate
-    "EVENTHUB_CONNECTION_STRING" = var.event_hub_connection_string
-    "EVENTHUB_NAME" = var.event_hub_name
+    "DYNATRACE_URL"                  = var.dynatrace_url
+    "DYNATRACE_ACCESS_KEY"           = var.dynatrace_access_key
+    "REQUIRE_VALID_CERTIFICATE"      = var.require_valid_certificate
+    "EVENTHUB_CONNECTION_STRING"     = var.event_hub_connection_string
+    "EVENTHUB_NAME"                  = var.event_hub_name
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
 
