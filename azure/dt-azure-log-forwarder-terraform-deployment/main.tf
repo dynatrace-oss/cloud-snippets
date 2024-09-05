@@ -19,12 +19,12 @@ module "application" {
   version_number              = local.version_number
   resource_group              = azurerm_resource_group.rg_to_deploy_logfw.name
 
-  storage_account_name       = module.storage-blob.azurerm_storage_account_name
-  storage_account_access_key = module.storage-blob.azurerm_storage_account_key
+  storage_account_name       = module.storage_blob.azurerm_storage_account_name
+  storage_account_access_key = module.storage_blob.azurerm_storage_account_key
 }
 
-module "storage-blob" {
-  source          = "./modules/infrastructure/storage-blob"
+module "storage_blob" {
+  source          = "./modules/infrastructure/storage_blob"
   resource_group  = azurerm_resource_group.rg_to_deploy_logfw.name
   deployment_name = local.deployment_name
   location        = local.location
