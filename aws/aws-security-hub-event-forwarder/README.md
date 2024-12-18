@@ -47,7 +47,7 @@ aws cloudformation deploy  \
 --stack-name dynatrace-aws-security-hub-event-forwarder \
 --parameter-overrides \
 "AwsSecretArn"="arn:aws:secretsmanager:us-east-1:12345678:secret:dynatrace-aws-security-hub-event-forwarder-open-pipeline-ingest-api-token-testxyz" \
-"DynatraceDomain"="https://{your-environment-id}.live.dynatrace.com/platform/ingest/v1/events.security" \
+"DynatraceDomain"="{your-environment-id}.live.dynatrace.com" \
 --capabilities CAPABILITY_NAMED_IAM
 ```
 
