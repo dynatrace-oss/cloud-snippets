@@ -9,23 +9,25 @@ More details can be found in the official documentation:
 
 Follow the steps below to create the AWS Security Hub event forwarder with Infrastructure as Code (IaC):
 
-### 0. Prerequisites
+## 0. Prerequisites
 
 - Dynatrace version
 
   | Feature                | Version |
-  | ---------------------- | ------- |
+  |------------------------| ------- |
   | vulnerability findings | 1.306+  |
+  | compliance findings    | 1.308+  |
+  | detection findings     | 1.308+  |
 
 - Make sure to install and configure the [latest AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
-- In a terminal, enter `aws configure` and set `us-central-1` (or your preferred region) as the default region.
+- In a terminal, enter `aws configure` and set `us-east-1` (or your preferred region) as the default region.
 - Make sure that any previous deployments of the Dynatrace AWS Security Hub event forwarder template are deleted by running:
 
   ```bash
   aws cloudformation delete-stack --stack-name dynatrace-aws-security-hub-event-forwarder
   ```
 
-### 1. Set up the secret with the OpenPipeline Api-Token
+## 1. Set up the secret with the OpenPipeline Api-Token
 
 Run the following command, making sure to replace the Api-Token with a valid [access token](https://docs.dynatrace.com/docs/manage/access-control/access-tokens) that has the `openpipeline.events_security` token scope.
 
@@ -36,7 +38,7 @@ aws secretsmanager create-secret \
 --secret-string '{"DYNATRACE_OPENPIPELINE_INGEST_API_TOKEN": "<Token>"}'
 ```
 
-### 2. Create the resources in AWS with the CloudFormation template
+## 2. Create the resources in AWS with the CloudFormation template
 
 Run the following command to execute the CloudFormation template and create the necessary resources.
 Make sure to replace the `AwsSecretArn` variable in the following command with the actual ARN of the secret that was created in the previous step.
@@ -47,19 +49,17 @@ aws cloudformation deploy  \
 --stack-name dynatrace-aws-security-hub-event-forwarder \
 --parameter-overrides \
 "AwsSecretArn"="arn:aws:secretsmanager:us-east-1:12345678:secret:dynatrace-aws-security-hub-event-forwarder-open-pipeline-ingest-api-token-testxyz" \
-"DynatraceDomain"="{your-environment-id}.live.dynatrace.com" \
+"DynatraceDomain"="https://{your-environment-id}.live.dynatrace.com" \
 --capabilities CAPABILITY_NAMED_IAM
 ```
 
-#### Additional parameters that can be customized
+### Additional parameters that can be customized
 
 - `AwsSecretKeyName`: Name of the secret key, defaults to `DYNATRACE_OPENPIPELINE_INGEST_API_TOKEN`
 
-- `FindingTypes`: FindingTypes in the format of namespace/category/classifier, see [ASFF finding types](https://docs.aws.amazon.com/securityhub/latest/userguide/asff-required-attributes.html#Types) for details. Multiple resource types can be provided with a comma separated list. Defaults to `Software and Configuration Checks/Vulnerabilities/CVE`
-
 - `DynatraceOpenPipelineEndpointPath`: Path to the OpenPipeline security endpoint, defaults to `/platform/ingest/v1/events.security`
 
-### (Optional) Delete stack
+## (Optional) Delete stack
 
 If they're not needed anymore, you can delete the resources created from AWS with the following command:
 
