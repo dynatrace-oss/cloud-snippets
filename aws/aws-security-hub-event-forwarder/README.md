@@ -13,11 +13,11 @@ Follow the steps below to create the AWS Security Hub event forwarder with Infra
 
 - Dynatrace version
 
-  | Feature                | Version |
-  |------------------------| ------- |
-  | vulnerability findings | 1.306+  |
-  | compliance findings    | 1.308+  |
-  | detection findings     | 1.308+  |
+  | Feature                            | Version |
+  |------------------------------------| ------- |
+  | vulnerability findings             | 1.306+  |
+  | compliance findings (experimental) | 1.308+  |
+  | detection findings                 | 1.308+  |
 
 - Make sure to install and configure the [latest AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 - In a terminal, enter `aws configure` and set `us-east-1` (or your preferred region) as the default region.
