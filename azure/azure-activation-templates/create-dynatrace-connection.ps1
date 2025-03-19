@@ -63,7 +63,7 @@ catch {
     throw "Request failed with status code: $($_.ErrorDetails.Message)"
 }
 
-$extensionName = "custom:my.awesome.azure.extension"
+$extensionName = "com.dynatrace.extension.da-azure"
 $efx_endpoint = "https://$Env:dynatraceTenant.$environment.dynatracelabs.com/api/v2/extensions/$extensionName/monitoringConfigurations"
 
 $configurationObject = $null
@@ -84,6 +84,7 @@ try
     if ($response.StatusCode -eq 200) {
         $configurationObject = $response.Content | ConvertFrom-Json
         $configurationObject.value.azure.credentials[0].connectionId = $activationData['connectionId']
+        $configurationObject.value.enabled = $true
         $activationData['updatedMonitoringConfigurationJson'] = $configurationObject | ConvertTo-Json -Depth 100
     } else {
         throw "Request failed with status code: $($response)"
