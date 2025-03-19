@@ -104,7 +104,7 @@
         "containerSettings": {},
         "cleanupPreference": "Always",
         "azPowerShellVersion": "8.1",
-        "primaryScriptUri": "https://raw.githubusercontent.com/dmossberg/azure-activation-v2/main/create-dynatrace-connection.ps1"
+        "primaryScriptUri": "https://raw.githubusercontent.com/dynatrace-oss/cloud-snippets/refs/heads/main/azure/azure-activation-templates/create-dynatrace-connection.ps1"
       }
     }
   ]

@@ -22,7 +22,7 @@ $jsonBody = @"
 [
     {
         "value": {
-            "azureClientSecret": {
+            "clientSecret": {
                 "directoryId": "$($Env:directoryId)",
                 "applicationId": "$($Env:clientId)",
                 "clientSecret": "$($Env:clientSecret)",
@@ -31,7 +31,7 @@ $jsonBody = @"
             "name": "Dynatrace Azure Monitoring ($($Env:subscriptionId))",
             "type": "clientSecret"
         },
-        "schemaVersion": "0.0.1",
+        "schemaVersion": "0.0.3",
         "schemaId": "builtin:hyperscaler-authentication.connections.azure"
     }
 ]
@@ -83,7 +83,9 @@ try
 
     if ($response.StatusCode -eq 200) {
         $configurationObject = $response.Content | ConvertFrom-Json
+        $configurationObject.value.azure.subscriptionFiltering = @($Env:subscriptionId)
         $configurationObject.value.azure.credentials[0].connectionId = $activationData['connectionId']
+        $configurationObject.value.azure.credentials[0].enabled = $true
         $configurationObject.value.enabled = $true
         $activationData['updatedMonitoringConfigurationJson'] = $configurationObject | ConvertTo-Json -Depth 100
     } else {
