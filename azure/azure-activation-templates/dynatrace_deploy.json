@@ -1,0 +1,111 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "monitoredSubscription": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "servicePrincipalAppId": {
+      "type": "string"
+    },
+    "servicePrincipalObjectId": {
+      "type": "string"
+    },
+    "servicePrincipalSecretKey": {
+      "type": "securestring"
+    },
+    "dynatraceApiKey": {
+      "type": "securestring"
+    },
+    "dynatraceTenant": {
+      "type": "string"
+    },
+    "dynatraceIntegrationName": {
+      "type": "string"
+    },
+    "deploymentGuid": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2024-11-01",
+      "name": "[concat('dynatrace-monitoring-role-', parameters('deploymentGuid'))]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid('dynatrace-monitoring-role', parameters('monitoredSubscription'), parameters('servicePrincipalObjectId'))]",
+              "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', parameters('monitoredSubscription'), '/providers/Microsoft.Authorization/roleDefinitions/', '43d0d8ad-25c7-4714-9337-8ba259a9fe05')]",
+                "principalId": "[parameters('servicePrincipalObjectId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "subscriptionId": "[parameters('monitoredSubscription')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "[concat('dynatrace-create-connection-', parameters('deploymentGuid'))]",
+      "location": "[parameters('location')]",
+      "kind": "AzurePowerShell",
+      "properties": {
+        "environmentVariables": [
+          {
+            "name": "subscriptionId",
+            "value": "[parameters('monitoredSubscription')]"
+          },
+          {
+            "name": "dynatraceTenant",
+            "value": "[parameters('dynatraceTenant')]"
+          },
+          {
+            "name": "dynatraceApiKey",
+            "value": "[parameters('dynatraceApiKey')]"
+          },
+          {
+            "name": "dynatraceEnvironment",
+            "value": "dev"
+          },
+          {
+            "name": "dynatraceConfigurationId",
+            "value": "[parameters('dynatraceIntegrationName')]"
+          },
+          {
+            "name": "clientId",
+            "value": "[parameters('servicePrincipalAppId')]"
+          },
+          {
+            "name": "clientSecret",
+            "secureValue": "[parameters('servicePrincipalSecretKey')]"
+          },
+          {
+            "name": "directoryId",
+            "value": "[subscription().tenantId]"
+          }
+        ],
+        "retentionInterval": "PT1H",
+        "timeout": "PT2M",
+        "containerSettings": {},
+        "cleanupPreference": "Always",
+        "azPowerShellVersion": "8.1",
+        "primaryScriptUri": "https://raw.githubusercontent.com/dmossberg/azure-activation-v2/main/create-dynatrace-connection.ps1"
+      }
+    }
+  ]
+}

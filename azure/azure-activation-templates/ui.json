@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "basics": [
+      {
+        "name": "subscriptions",
+        "type": "Microsoft.Solutions.ArmApiControl",
+        "request": {
+          "method": "GET",
+          "path": "/subscriptions?api-version=2022-12-01"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "name": "servicePrincipalConfiguration",
+        "label": "Service Principal Configuration",
+        "elements": [
+          {
+            "name": "ServicePrincipal",
+            "type": "Microsoft.Common.ServicePrincipalSelector",
+            "label": {
+              "servicePrincipalId": "Service Principal ID",
+              "password": "Secret key",
+              "sectionHeader": "Create Dynatrace Service Principal"
+            },
+            "defaultValue": {
+              "principalId": "<default guid>",
+              "name": "(New) default App Id"
+            },
+            "constraints": {
+              "required": true
+            },
+            "options": {
+              "hideCertificate": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "dynatraceConfiguration",
+        "label": "Dynatrace Configuration",
+        "elements": [
+          {
+            "name": "DynatraceIntegration",
+            "type": "Microsoft.Common.Section",
+            "label": "Dynatrace Organization",
+            "elements": [
+              {
+                "name": "dynatraceApiKey",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password": "Dynatrace API Key"
+                },
+                "constraints": {
+                  "required": true
+                },
+                "options": {
+                  "hideConfirmation": true
+                }
+              },
+              {
+                "name": "dynatraceTenant",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Dynatrace Tenant",
+                "constraints": {
+                  "required": true
+                }
+              }
+            ]
+          },
+          {
+            "name": "MonitoringConfiguration",
+            "type": "Microsoft.Common.Section",
+            "label": "Monitoring Configuration",
+            "elements": [
+              {
+                "name": "dynatraceIntegrationName",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Dynatrace Monitoring Configuration ID",
+                "constraints": {
+                  "required": true
+                }
+              },
+              {
+                "name": "monitoredSubscription",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Subscription to monitor",
+                "filterPlaceholder": "Select the subscriptions to monitor",
+                "filter": true,
+                "multiselect": false,
+                "multiLine": true,
+                "constraints": {
+                  "allowedValues": "[map(filter(steps('basics').subscriptions.value, (subscription) => equals(subscription.state, 'Enabled')), (subscription) => parse(concat('{\"label\":\"', subscription.displayName, '\",\"value\":\"', subscription.subscriptionId, '\",\"description\":\"', subscription.subscriptionId, '\"}')))]",
+                  "required": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "deploymentSubscription": "[subscription().subscriptionId]",
+      "monitoredSubscription": "[steps('dynatraceConfiguration').MonitoringConfiguration.monitoredSubscription]",
+      "resourceGroup": "[resourceGroup().name]",
+      "location": "[location()]",
+      "servicePrincipalAppId": "[steps('servicePrincipalConfiguration').ServicePrincipal.appId]",
+      "servicePrincipalObjectId": "[first(steps('servicePrincipalConfiguration').ServicePrincipal.objectId)]",
+      "servicePrincipalSecretKey": "[steps('servicePrincipalConfiguration').ServicePrincipal.password]",
+      "dynatraceApiKey": "[steps('dynatraceConfiguration').DynatraceIntegration.dynatraceApiKey]",
+      "dynatraceTenant": "[steps('dynatraceConfiguration').DynatraceIntegration.dynatraceTenant]",
+      "dynatraceIntegrationName": "[steps('dynatraceConfiguration').MonitoringConfiguration.dynatraceIntegrationName]"
+    }
+  }
+}
