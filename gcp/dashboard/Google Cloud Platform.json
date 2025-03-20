@@ -1,0 +1,3023 @@
+{
+    "version": 17,
+    "variables": [],
+    "tiles": {
+        "2": {
+            "title": "Top 10 regions by count() of VM Instances",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:gce_instance`\n| fieldsAdd region = substring(zone, to: -2)\n| summarize  count=count(), by:{region}\n| sort count desc\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "region"
+                        ],
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "categoryAxisLabel": "region",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "entity.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "region"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "5": {
+            "title": "Network: VM Instances Network In Total (bytes)",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.compute_googleapis_com.instance.network.received_bytes_count),       \n  by:  {instance_name}\n| fieldsKeep  timeframe,  max, interval, instance_name\n| fieldsadd m=arrayMax(max)\n| sort m desc\n| fieldsKeep  timeframe,  max, interval, instance_name\n| limit 10",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "azure.resource.name",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "Received bytes",
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "legend": {
+                        "position": "auto",
+                        "hidden": false
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742398652353
+                        }
+                    ]
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "6": {
+            "title": "Network: VM Instances Network Out Total (bytes)",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.compute_googleapis_com.instance.network.sent_bytes_count),       \n  by:  {instance_name}\n| fieldsKeep  timeframe,  max, interval, instance_name\n| fieldsadd m=arrayMax(max)\n| sort m desc\n| fieldsKeep  timeframe,  max, interval, instance_name\n| limit 10",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "azure.resource.name",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "Sent bytes",
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742398694569
+                        }
+                    ]
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "9": {
+            "title": "",
+            "type": "markdown",
+            "content": "## Google Compute Engine overview"
+        },
+        "10": {
+            "title": "",
+            "type": "markdown",
+            "content": "## Other compute resources\n"
+        },
+        "14": {
+            "title": "Top 10 GCP projects by count() VM instances",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:gce_instance`\n| summarize  count=count(), by:{project_id}\n| sort count desc\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "project_id"
+                        ],
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "categoryAxisLabel": "project_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "entity.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.subscripton"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "15": {
+            "title": "VM instances",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:gce_instance`\n| summarize  count=count()",
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "aws.account_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "count",
+                    "prefixIcon": "",
+                    "recordField": "count",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "trend": {
+                        "isVisible": false,
+                        "trendType": "auto"
+                    },
+                    "sparklineSettings": {
+                        "isVisible": false
+                    }
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "16": {
+            "title": "Google Kubernetes Engine",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:k8s_cluster`\n| summarize  count()",
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "aws.account_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "count()",
+                    "prefixIcon": "",
+                    "recordField": "count()",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "trend": {
+                        "isVisible": false,
+                        "trendType": "auto"
+                    },
+                    "sparklineSettings": {
+                        "isVisible": false
+                    }
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count()"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "19": {
+            "title": "Instance Groups",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:instance_group`\n| summarize  count()",
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "aws.account_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "count()",
+                    "prefixIcon": "",
+                    "recordField": "count()",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "trend": {
+                        "isVisible": false,
+                        "trendType": "auto"
+                    },
+                    "sparklineSettings": {
+                        "isVisible": false
+                    }
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count()"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "20": {
+            "title": "Top 10 projects with GKE clusters",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:k8s_cluster`\n| summarize  count=count(), by:{project_id}\n| sort count desc\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "project_id"
+                        ],
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "categoryAxisLabel": "project_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "entity.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.subscripton"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "22": {
+            "title": "Top 10 projects with Instance Groups",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:instance_group`\n| summarize  count=count(), by:{project_id}\n| sort count desc\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "project_id"
+                        ],
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "categoryAxisLabel": "project_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "entity.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.subscripton"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "24": {
+            "title": "GKE clusters - nodes cores (total)",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.kubernetes_io.node.cpu.total_cores),       \n  by:  {cluster_name}\n| fieldsKeep  timeframe,  max, interval, cluster_name\n| fieldsadd last_size= arraylast(max)\n| sort last_size desc\n| fieldsKeep  timeframe,  last_size, interval, cluster_name\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "cluster_name"
+                        ],
+                        "categoryAxisLabel": "cluster_name",
+                        "valueAxis": [
+                            "last_size"
+                        ],
+                        "valueAxisLabel": "last_size",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "interval"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "Total cores",
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "26": {
+            "title": "Instance group size over time",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.compute_googleapis_com.instance_group.size),       \n  by:  {instance_group_name}\n| fieldsKeep  timeframe,  max, interval, instance_group_name\n| fieldsadd m=arrayMax(max)\n| sort m desc\n| fieldsKeep  timeframe,  max, interval, instance_group_name\n| limit 10",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "azure.resource.name",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "Instance group size",
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742411186495
+                        }
+                    ]
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            },
+            "timeframe": {
+                "tileTimeframeEnabled": false,
+                "tileTimeframe": {
+                    "from": "now()-2h",
+                    "to": "now()"
+                }
+            }
+        },
+        "27": {
+            "title": "Google error logs by resource type",
+            "type": "data",
+            "query": "fetch logs\n| filter (cloud.provider == \"gcp\" ) and in(loglevel, array(\"ERROR\", \"WARNING\"))\n| summarize count(), by: {bin(timestamp,5min), gcp.resource.type}",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "azure.resource.type",
+                        "valueAxisLabel": "count()",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "bin(timestamp, 5m)",
+                        "leftAxisValues": [
+                            "count()"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "legend": {
+                        "position": "auto",
+                        "hidden": false
+                    },
+                    "xAxisLabel": "bin(timestamp, 5m)",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count()"
+                    },
+                    "displayedFields": [
+                        "azure.resource.type"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "29": {
+            "title": "VM Instances CPU utilzation",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.compute_googleapis_com.instance.cpu.utilization),       \n by:  {instance_name}\n| fieldsKeep  timeframe,  max, interval, instance_name\n| fieldsadd lastMaxCPU=toLong(arrayLast(max))\n| sort lastMaxCPU desc \n| fieldsKeep  timeframe,  lastMaxCPU, max,  instance_name\n| limit 100",
+            "visualization": "honeycomb",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "azure.resource.name",
+                        "valueAxisLabel": "lastMaxCPU",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "lastMaxCPU"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "0": "a",
+                        "1": "u",
+                        "2": "t",
+                        "3": "o",
+                        "position": "auto",
+                        "hidden": false
+                    },
+                    "dataMappings": {
+                        "value": "lastMaxCPU"
+                    },
+                    "displayedFields": [
+                        "instance_name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "red-green",
+                    "customColors": [
+                        {
+                            "id": 0,
+                            "value": "",
+                            "comparator": "=",
+                            "color": {
+                                "Default": "var(--dt-colors-charts-categorical-color-01-default, #134fc9)"
+                            }
+                        }
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "lastMaxCPU",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                },
+                "unitsOverrides": [
+                    {
+                        "identifier": "lastMaxCPU",
+                        "unitCategory": "percentage",
+                        "baseUnit": "percent",
+                        "displayUnit": null,
+                        "decimals": 0,
+                        "suffix": "",
+                        "delimiter": false,
+                        "added": 1742416283461
+                    }
+                ]
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "30": {
+            "title": "Active Problems",
+            "type": "data",
+            "query": "fetch events, from: -6h-10m\n    | filter in(dt.system.bucket, {\"default_davis_events\", \"default_davis_custom_events\", \"default_k8s_ops_events\"})\n    | filter event.kind == \"DAVIS_PROBLEM\" \n    | filter in(cloud.provider,\"gcp\") \n    | sort timestamp\n    | expand affected_entity_id = affected_entity_ids\n    | summarize {\n      event.status = takeLast(event.status),\n      dt.davis.is_duplicate = takeLast(dt.davis.is_duplicate)\n    }, by: {event.id,affected_entity_id,cloud.region, cloud.provider, event.description, event.name, affected_entity_ids}\n    | filter isNull(dt.davis.is_duplicate) OR not(dt.davis.is_duplicate)\n    | filter event.status == \"ACTIVE\"\n    | summarize  count()\n  \n  ",
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "aws.nlb.instance.id",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "leftYAxisSettings": {
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "count()",
+                    "prefixIcon": "",
+                    "recordField": "count()",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "trend": {
+                        "isVisible": false,
+                        "trendType": "auto"
+                    },
+                    "sparklineSettings": {}
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count()"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "32": {
+            "title": "Top 10 Instance group by size",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.compute_googleapis_com.instance_group.size),       \n  by:  {instance_group_name}\n| fieldsKeep  timeframe,  max, interval, instance_group_name\n| fieldsadd last_size= arraylast(max)\n| sort last_size desc\n| fieldsKeep   last_size, interval, instance_group_name\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "instance_group_name"
+                        ],
+                        "categoryAxisLabel": "instance_group_name",
+                        "valueAxis": [
+                            "last_size"
+                        ],
+                        "valueAxisLabel": "last_size",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "leftYAxisSettings": {
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisIsLabelVisible": true
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "33": {
+            "title": "Latest logs",
+            "type": "data",
+            "query": "fetch logs\n| filter (cloud.provider == \"gcp\" ) and in(loglevel, array(\"ERROR\", \"WARNING\"))\n| fieldsKeep loglevel, \ngcp.project.id, gcp.region, gcp.resource.type, loglevel, content , timestamp\n| sort timestamp desc\n| limit 100",
+            "visualization": "table",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "content",
+                        "valueAxisLabel": "",
+                        "tooltipVariant": "single"
+                    },
+                    "truncationMode": "middle",
+                    "hiddenLegendFields": []
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "error",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "linewrapEnabled": false,
+                    "lineWrapIds": [],
+                    "monospacedFontEnabled": false,
+                    "monospacedFontColumns": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "content"
+                            ],
+                            "id": 1725278083637,
+                            "value": "log-content"
+                        }
+                    ]
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "categorical",
+                    "dataMappings": {
+                        "value": "content"
+                    },
+                    "displayedFields": [
+                        "azure.resource.type"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": []
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                },
+                "recordView": {
+                    "fieldsWidth": 200.23
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "34": {
+            "title": "",
+            "type": "markdown",
+            "content": "## Google Operations logs"
+        },
+        "35": {
+            "title": "",
+            "type": "markdown",
+            "content": "## Davis problems"
+        },
+        "36": {
+            "title": "Problems by region",
+            "type": "data",
+            "query": "fetch events, from: -6h-10m\n    | filter in(dt.system.bucket, {\"default_davis_events\", \"default_davis_custom_events\", \"default_k8s_ops_events\"})\n    | filter event.kind == \"DAVIS_PROBLEM\" \n    | filter in(cloud.provider,\"gcp\") \n    | sort timestamp\n    | expand affected_entity_id = affected_entity_ids\n    | summarize {\n      event.status = takeLast(event.status),\n      dt.davis.is_duplicate = takeLast(dt.davis.is_duplicate)\n    }, by: {event.id,affected_entity_id,cloud.region, cloud.provider, event.description, event.name, affected_entity_ids}\n    | filter isNull(dt.davis.is_duplicate) OR not(dt.davis.is_duplicate)\n    | filter event.status == \"ACTIVE\"\n    | summarize  count(), by: {cloud.region[0]}",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "count()"
+                        ],
+                        "categoryAxisLabel": "count()",
+                        "valueAxis": [
+                            "count()"
+                        ],
+                        "valueAxisLabel": "count()",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "leftYAxisSettings": {
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "count()",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "trend": {
+                        "isVisible": false
+                    }
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count()"
+                    },
+                    "displayedFields": [
+                        "cloud.region[0]"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "37": {
+            "title": "Active problem details",
+            "type": "data",
+            "query": "fetch events, from: -6h-10m\n    | filter in(dt.system.bucket, {\"default_davis_events\", \"default_davis_custom_events\", \"default_k8s_ops_events\"})\n    | filter event.kind == \"DAVIS_PROBLEM\" \n    | filter in(cloud.provider,\"gcp\") \n    | sort timestamp\n    | expand affected_entity_id = affected_entity_ids\n    | summarize {\n      event.status = takeLast(event.status),\n      dt.davis.is_duplicate = takeLast(dt.davis.is_duplicate)\n    }, by: {event.id,affected_entity_id,cloud.region, cloud.provider, event.description, event.name, affected_entity_ids}\n    | filter isNull(dt.davis.is_duplicate) OR not(dt.davis.is_duplicate)\n    | filter event.status == \"ACTIVE\" \n    | summarize  count(), by:   event.name\n    | fieldsRename problem = event.name ",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": "problem",
+                        "categoryAxisLabel": "problem",
+                        "valueAxis": [
+                            "count()"
+                        ],
+                        "valueAxisLabel": "count()",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "leftYAxisSettings": {
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "legend": {
+                        "position": "right",
+                        "hidden": false
+                    }
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "count()",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "trend": {
+                        "isVisible": false
+                    }
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [
+                        [
+                            "event.description"
+                        ],
+                        [
+                            "event.name"
+                        ]
+                    ],
+                    "columnWidths": {},
+                    "colorThresholdTarget": "value",
+                    "linewrapEnabled": true,
+                    "monospacedFontEnabled": true,
+                    "monospacedFontColumns": [
+                        [
+                            "event.description"
+                        ],
+                        [
+                            "event.name"
+                        ]
+                    ],
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count()"
+                    },
+                    "displayedFields": [
+                        "problem"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "39": {
+            "title": "Cloud Run Revision",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:cloud_run_revision`\n| summarize  count()",
+            "visualization": "singleValue",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "aws.account_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": false,
+                    "label": "count()",
+                    "prefixIcon": "",
+                    "recordField": "count()",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value",
+                    "trend": {
+                        "isVisible": false,
+                        "trendType": "auto"
+                    },
+                    "sparklineSettings": {
+                        "isVisible": false
+                    }
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count()"
+                    },
+                    "displayedFields": [
+                        null
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count()",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "40": {
+            "title": "Top 10 projects with Cloud Run Revision",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:cloud_run_revision`\n| summarize  count=count(), by:{project_id}\n| sort count desc\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "number-of-slices",
+                        "groupingThresholdValue": 10,
+                        "valueType": "absolute",
+                        "showTotalValue": true,
+                        "hideLabels": false,
+                        "groupingName": null
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "project_id"
+                        ],
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "categoryAxisLabel": "project_id",
+                        "valueAxisLabel": "count",
+                        "layout": "horizontal",
+                        "groupMode": "stacked",
+                        "isCategoryLabelVisible": false,
+                        "isValueLabelVisible": false,
+                        "tooltipVariant": "single",
+                        "scale": "absolute"
+                    },
+                    "legend": {
+                        "hidden": true
+                    },
+                    "truncationMode": "middle"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "entity.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.subscripton"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "41": {
+            "title": "GKE clusters - nodes memory (total)",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.kubernetes_io.node.memory.total_bytes),       \n  by:  {cluster_name}\n| fieldsKeep  timeframe,  max, interval, cluster_name\n| fieldsadd last_size= arraylast(max)\n| sort last_size desc\n| fieldsKeep  timeframe,  last_size, interval, cluster_name\n| limit 10",
+            "visualization": "categoricalBarChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "cluster_name"
+                        ],
+                        "categoryAxisLabel": "cluster_name",
+                        "valueAxis": [
+                            "last_size"
+                        ],
+                        "valueAxisLabel": "last_size",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "interval"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "Memory usage",
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "42": {
+            "title": "Container CPU Utilization",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.run_googleapis_com.container.cpu.utilizations),       \n  by:  {revision_name}\n| fieldsKeep  timeframe,  max, interval, revision_name\n| fieldsadd m=arrayMax(max)\n| sort m desc\n| fieldsKeep  timeframe,  max, interval, revision_name\n| limit 10",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "azure.resource.name",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "Container CPU Utilization",
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742415833228
+                        }
+                    ]
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "43": {
+            "title": "Container memory Utilization",
+            "type": "data",
+            "query": "timeseries max= max(cloud.gcp.run_googleapis_com.container.memory.utilizations),       \n  by:  {revision_name}\n| fieldsKeep  timeframe,  max, interval, revision_name\n| fieldsadd m=arrayMax(max)\n| sort m desc\n| fieldsKeep  timeframe,  max, interval, revision_name\n| limit 10",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "thresholds": [
+                    {
+                        "id": 1,
+                        "field": "",
+                        "title": "",
+                        "isEnabled": true,
+                        "rules": []
+                    }
+                ],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "connect",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "relative"
+                    },
+                    "categoryOverrides": {},
+                    "categoricalBarChartSettings": {
+                        "categoryAxisLabel": "azure.resource.name",
+                        "valueAxisLabel": "interval",
+                        "tooltipVariant": "single"
+                    },
+                    "hiddenLegendFields": [
+                        "aws.ec2"
+                    ],
+                    "fieldMapping": {
+                        "timestamp": "timeframe",
+                        "leftAxisValues": [
+                            "max"
+                        ]
+                    },
+                    "leftYAxisSettings": {
+                        "isLabelVisible": true,
+                        "label": "Container Memory Utilization",
+                        "max": "auto",
+                        "min": 0
+                    },
+                    "truncationMode": "middle",
+                    "xAxisLabel": "timeframe",
+                    "xAxisIsLabelVisible": false,
+                    "valueRepresentation": "absolute"
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "aws.ec2.name",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "lineWrapIds": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": [
+                        {
+                            "fields": [
+                                "max"
+                            ],
+                            "value": "sparkline",
+                            "id": 1742416024631
+                        }
+                    ]
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": "auto",
+                    "dataMappings": {
+                        "value": "interval"
+                    },
+                    "displayedFields": [
+                        "azure.resource.name"
+                    ],
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue"
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "interval",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 100,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "44": {
+            "title": "",
+            "type": "markdown",
+            "content": "## Non compute resources\n"
+        },
+        "45": {
+            "title": "Databases",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:spanner_instance` | fieldsAdd  azure.resource.type = \"Spanner\"\n| append [ fetch `dt.entity.cloud:gcp:redis_instance` | fieldsAdd  azure.resource.type = \"Memorystore\"]\n| append [ fetch `dt.entity.cloud:gcp:cloudsql_database` | fieldsAdd  azure.resource.type = \"Cloud SQL\"]\n| append [ fetch `dt.entity.cloud:gcp:alloydb_database` | fieldsAdd  azure.resource.type = \"AlloyDB\"]\n| append [ fetch `dt.entity.cloud:gcp:bigtable_table` | fieldsAdd  azure.resource.type = \"Bigtable\"]\n| summarize count= count(), by: {azure.resource.type}\n",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "truncationMode": "middle",
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "azure.resource.type"
+                        ],
+                        "categoryAxisLabel": "azure.resource.type",
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "valueAxisLabel": "count",
+                        "tooltipVariant": "single"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "azure.resource.type",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "linewrapEnabled": false,
+                    "lineWrapIds": [],
+                    "monospacedFontEnabled": false,
+                    "monospacedFontColumns": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.resource.type"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "46": {
+            "title": "Storage",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:filestore_instance` | fieldsAdd  resource.type = \"Filestore\"\n| append [ fetch `dt.entity.cloud:gcp:gcs_bucket` | fieldsAdd  resource.type = \"Storage Buckets\"]\n| summarize count= count(), by: {resource.type}",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "truncationMode": "middle",
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "resource.type"
+                        ],
+                        "categoryAxisLabel": "resource.type",
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "valueAxisLabel": "count",
+                        "tooltipVariant": "single"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "azure.resource.type",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "linewrapEnabled": false,
+                    "lineWrapIds": [],
+                    "monospacedFontEnabled": false,
+                    "monospacedFontColumns": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.resource.type"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "47": {
+            "title": "Serverless",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:cloud_function` | fieldsAdd  resource.type = \"Cloud Function\"\n| append [ fetch `dt.entity.cloud:gcp:cloud_run_revision` | fieldsAdd  resource.type = \"Cloud Run\"]\n| summarize count= count(), by: {resource.type}",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "truncationMode": "middle",
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "resource.type"
+                        ],
+                        "categoryAxisLabel": "resource.type",
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "valueAxisLabel": "count",
+                        "tooltipVariant": "single"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "azure.resource.type",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "linewrapEnabled": false,
+                    "lineWrapIds": [],
+                    "monospacedFontEnabled": false,
+                    "monospacedFontColumns": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.resource.type"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        },
+        "48": {
+            "title": "Network devices",
+            "type": "data",
+            "query": "fetch `dt.entity.cloud:gcp:gce_router` | fieldsAdd  resource.type = \"Cloud Router\"\n| append [ fetch `dt.entity.cloud:gcp:https_lb` | fieldsAdd  resource.type = \"HTTP/S Load Balancer\"]\n| append [ fetch `dt.entity.cloud:gcp:interconnect` | fieldsAdd  resource.type = \"Interconnect\"]\n| append [ fetch `dt.entity.cloud:gcp:interconnect_attachment` | fieldsAdd  resource.type = \"Interconnect Attachment\"]\n| append [ fetch `dt.entity.cloud:gcp:internal_http_lb_rule` | fieldsAdd  resource.type = \"Internal HTTP/S Load Balancer\"]\n| append [ fetch `dt.entity.cloud:gcp:internal_network_lb_rule` | fieldsAdd  resource.type = \"Internal Network Load Balancer\"]\n| append [ fetch `dt.entity.cloud:gcp:network_lb_rule` | fieldsAdd  resource.type = \"Network Load Balancer\"]\n| append [ fetch `dt.entity.cloud:gcp:network_security_policy` | fieldsAdd  resource.type = \"Network Security Policy\"]\n| append [ fetch `dt.entity.cloud:gcp:tcp_ssl_proxy_rule` | fieldsAdd  resource.type = \"Proxy Network Load Balancer,\"]\n| append [ fetch `dt.entity.cloud:gcp:vpc_access_connector` | fieldsAdd  resource.type = \"VPC access connector\"]\n| append [ fetch `dt.entity.cloud:gcp:vpn_gateway` | fieldsAdd  resource.type = \"VPN gateway\"]\n| summarize count= count(), by: {resource.type}",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "thresholds": [],
+                "chartSettings": {
+                    "xAxisScaling": "analyzedTimeframe",
+                    "gapPolicy": "gap",
+                    "circleChartSettings": {
+                        "groupingThresholdType": "relative",
+                        "groupingThresholdValue": 0,
+                        "valueType": "absolute"
+                    },
+                    "categoryOverrides": {},
+                    "curve": "linear",
+                    "pointsDisplay": "auto",
+                    "truncationMode": "middle",
+                    "categoricalBarChartSettings": {
+                        "categoryAxis": [
+                            "resource.type"
+                        ],
+                        "categoryAxisLabel": "resource.type",
+                        "valueAxis": [
+                            "count"
+                        ],
+                        "valueAxisLabel": "count",
+                        "tooltipVariant": "single"
+                    }
+                },
+                "singleValue": {
+                    "showLabel": true,
+                    "label": "",
+                    "prefixIcon": "",
+                    "recordField": "azure.resource.type",
+                    "autoscale": true,
+                    "alignment": "center",
+                    "colorThresholdTarget": "value"
+                },
+                "table": {
+                    "rowDensity": "condensed",
+                    "enableSparklines": false,
+                    "hiddenColumns": [],
+                    "linewrapEnabled": false,
+                    "lineWrapIds": [],
+                    "monospacedFontEnabled": false,
+                    "monospacedFontColumns": [],
+                    "columnWidths": {},
+                    "columnTypeOverrides": []
+                },
+                "honeycomb": {
+                    "shape": "hexagon",
+                    "legend": {
+                        "hidden": false,
+                        "position": "auto"
+                    },
+                    "colorMode": "color-palette",
+                    "colorPalette": "blue",
+                    "dataMappings": {
+                        "value": "count"
+                    },
+                    "displayedFields": [
+                        "azure.resource.type"
+                    ]
+                },
+                "histogram": {
+                    "dataMappings": [
+                        {
+                            "valueAxis": "count",
+                            "rangeAxis": ""
+                        }
+                    ]
+                },
+                "valueBoundaries": {
+                    "min": "auto",
+                    "max": "auto"
+                }
+            },
+            "querySettings": {
+                "maxResultRecords": 1000,
+                "defaultScanLimitGbytes": 500,
+                "maxResultMegaBytes": 1,
+                "defaultSamplingRatio": 10,
+                "enableSampling": false
+            },
+            "davis": {
+                "enabled": false,
+                "davisVisualization": {
+                    "isAvailable": true
+                }
+            }
+        }
+    },
+    "layouts": {
+        "2": {
+            "x": 0,
+            "y": 6,
+            "w": 3,
+            "h": 5
+        },
+        "5": {
+            "x": 0,
+            "y": 11,
+            "w": 6,
+            "h": 5
+        },
+        "6": {
+            "x": 6,
+            "y": 11,
+            "w": 6,
+            "h": 5
+        },
+        "9": {
+            "x": 0,
+            "y": 0,
+            "w": 12,
+            "h": 1
+        },
+        "10": {
+            "x": 0,
+            "y": 16,
+            "w": 24,
+            "h": 1
+        },
+        "14": {
+            "x": 2,
+            "y": 1,
+            "w": 4,
+            "h": 5
+        },
+        "15": {
+            "x": 0,
+            "y": 1,
+            "w": 2,
+            "h": 5
+        },
+        "16": {
+            "x": 0,
+            "y": 20,
+            "w": 2,
+            "h": 3
+        },
+        "19": {
+            "x": 0,
+            "y": 17,
+            "w": 2,
+            "h": 3
+        },
+        "20": {
+            "x": 2,
+            "y": 20,
+            "w": 4,
+            "h": 3
+        },
+        "22": {
+            "x": 2,
+            "y": 17,
+            "w": 4,
+            "h": 3
+        },
+        "24": {
+            "x": 15,
+            "y": 20,
+            "w": 9,
+            "h": 3
+        },
+        "26": {
+            "x": 6,
+            "y": 17,
+            "w": 9,
+            "h": 3
+        },
+        "27": {
+            "x": 12,
+            "y": 6,
+            "w": 12,
+            "h": 3
+        },
+        "29": {
+            "x": 6,
+            "y": 1,
+            "w": 6,
+            "h": 10
+        },
+        "30": {
+            "x": 12,
+            "y": 1,
+            "w": 2,
+            "h": 5
+        },
+        "32": {
+            "x": 15,
+            "y": 17,
+            "w": 9,
+            "h": 3
+        },
+        "33": {
+            "x": 12,
+            "y": 10,
+            "w": 12,
+            "h": 6
+        },
+        "34": {
+            "x": 12,
+            "y": 9,
+            "w": 12,
+            "h": 1
+        },
+        "35": {
+            "x": 12,
+            "y": 0,
+            "w": 11,
+            "h": 1
+        },
+        "36": {
+            "x": 14,
+            "y": 1,
+            "w": 4,
+            "h": 5
+        },
+        "37": {
+            "x": 18,
+            "y": 1,
+            "w": 6,
+            "h": 5
+        },
+        "39": {
+            "x": 0,
+            "y": 23,
+            "w": 2,
+            "h": 3
+        },
+        "40": {
+            "x": 2,
+            "y": 23,
+            "w": 4,
+            "h": 3
+        },
+        "41": {
+            "x": 6,
+            "y": 20,
+            "w": 9,
+            "h": 3
+        },
+        "42": {
+            "x": 6,
+            "y": 23,
+            "w": 9,
+            "h": 3
+        },
+        "43": {
+            "x": 15,
+            "y": 23,
+            "w": 9,
+            "h": 3
+        },
+        "44": {
+            "x": 0,
+            "y": 26,
+            "w": 24,
+            "h": 1
+        },
+        "45": {
+            "x": 0,
+            "y": 27,
+            "w": 6,
+            "h": 6
+        },
+        "46": {
+            "x": 6,
+            "y": 27,
+            "w": 6,
+            "h": 6
+        },
+        "47": {
+            "x": 12,
+            "y": 27,
+            "w": 6,
+            "h": 6
+        },
+        "48": {
+            "x": 18,
+            "y": 27,
+            "w": 6,
+            "h": 6
+        }
+    },
+    "importedWithCode": false,
+    "settings": {}
+}
