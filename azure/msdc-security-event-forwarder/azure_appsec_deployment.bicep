@@ -2,13 +2,14 @@ param location string = resourceGroup().location
 param dt_api_url string
 param dt_token string
 
+var uniqueStr = uniqueString(resourceGroup().id)
 var eventHubSku = 'Basic'
 var eventHubName = 'dt-appsec-event-hub'
-var eventHubNamespaceName = 'dt-appsec-event-hub-ns'
-var functionAppName = 'dt-appsec-function-app'
+var eventHubNamespaceName = 'dt-appsec-event-hub-ns-${uniqueStr}'
+var functionAppName = 'dt-appsec-function-app-${uniqueStr}'
 var hostingPlanName = 'dt-appsec-hosting-plan'
 var storageAccountType = 'Standard_LRS'
-var storageAccountName = '${uniqueString(resourceGroup().id)}azfunctions'
+var storageAccountName = 'azfunctions${uniqueStr}'
 
 
 resource eventHubNamespace 'Microsoft.EventHub/namespaces@2024-01-01' = {
@@ -160,7 +161,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         }
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: 'https://github.com/dynatrace-oss/cloud-snippets/raw/refs/heads/main/azure/msdc-security-event-forwarder/msdc_function_app.zip'
+          value: 'https://github.com/NoahGirard/cloud-snippets/raw/refs/heads/main/azure/msdc-security-event-forwarder/msdc_function_app.zip'
         }
       ]
       numberOfWorkers: 1
