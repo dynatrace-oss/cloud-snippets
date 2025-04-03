@@ -122,6 +122,7 @@ Resources:
 
           def handle(event: dict, context: dict) -> dict:
               try:
+                  # print(event)
                   # Process the GuardDuty event
                   resource: dict = event["detail"]["resource"]
                   resource_type: str = resource["resourceType"]
@@ -129,14 +130,25 @@ Resources:
                   match resource_type:
                       # The S3 related events are different from the rest: they contain an array of bucket details
                       # representing target resources. While the rest of the events contain a single resource object.
-                      # For the sake of matching 
-                      case "S3Bucket" | "S3Object":
-                          # Split event into multiple copies. Each copy will contain a single bucket detail inside the array.
+                      case "S3Bucket":
                           bucket_details: list[dict] = resource["s3BucketDetails"]
                           for bucket_detail in bucket_details:
-                              part = copy.deepcopy(event)
-                              part["detail"]["resource"]["s3BucketDetails"] = [bucket_detail]
-                              send_event_to_dynatrace(part)
+                              bucket_detail["s3ObjectDetails"] = [object_detail]
+                              event_copy = copy.deepcopy(event)
+                              event_copy["detail"]["resource"]["s3BucketDetails"] = [bucket_detail]
+                              send_event_to_dynatrace(event_copy)
+
+                      case "S3Object":
+                          bucket_details: list[dict] = resource["s3BucketDetails"]
+                          for bucket_detail in bucket_details:
+                              object_details: list[dict] = bucket_detail["s3ObjectDetails"]
+                              for object_detail in object_details:
+                                  bucket_detail_copy = copy.deepcopy(bucket_detail)
+                                  bucket_detail_copy["s3ObjectDetails"] = [object_detail]
+                                  event_copy = copy.deepcopy(event)
+                                  event_copy["detail"]["resource"]["s3BucketDetails"] = [bucket_detail_copy]
+                                  send_event_to_dynatrace(event_copy)
+
                       case _:
                           # Send as-is
                           send_event_to_dynatrace(event)
@@ -152,7 +164,6 @@ Resources:
                       "statusCode": 500,
                       "body": "Error executing OpenPipeline event export"
                   }
-
 
       Handler: "index.handle"
       MemorySize: 128
