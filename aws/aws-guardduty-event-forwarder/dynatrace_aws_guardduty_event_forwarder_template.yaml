@@ -1,0 +1,204 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Template for Dynatrace AWS GuardDuty Event Forwarder
+
+Metadata:
+  License:
+    Description: |
+      Copyright 2025 Dynatrace LLC
+
+      Licensed under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License.
+      You may obtain a copy of the License at
+
+          https://www.apache.org/licenses/LICENSE-2.0
+
+      Unless required by applicable law or agreed to in writing, software
+      distributed under the License is distributed on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      See the License for the specific language governing permissions and
+      limitations under the License.
+
+Parameters:
+  AwsSecretArn:
+    Description: Arn of the created secret upfront.
+    Type: String
+
+  AwsSecretKeyName:
+    Description: Name of the secret key.
+    Default: "DYNATRACE_OPENPIPELINE_INGEST_API_TOKEN"
+    Type: String
+
+  DynatraceOpenPipelineEndpoint:
+    Description: Full URL of the OpenPipeline security endpoint.
+    Type: String
+
+Resources:
+  DynatraceAwsGuardDutyEventForwarderLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        Fn::Join:
+          - "-"
+          - - dynatrace-aws-guardduty-lambda-role
+            - !Ref AWS::Region
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Path: /
+      Policies:
+        - PolicyName: "dynatrace-aws-guardduty-event-forwarder-read-dynatrace-secret-token"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "secretsmanager:GetSecretValue"
+                Resource: !Ref AwsSecretArn
+                Sid: "VisualEditor0"
+
+  DynatraceAwsGuardDutyEventForwarderLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: dynatrace-aws-guardduty-event-forwarder-lambda
+      Description: Dynatrace AWS GuardDuty event forwarder lambda function.
+      TracingConfig:
+        Mode: "PassThrough"
+      Runtime: python3.13
+      Code:
+        ZipFile: |
+          import copy
+          import json
+          import http.client
+          import os
+          from urllib.parse import urlparse
+          from uuid import uuid4
+
+          import boto3
+
+
+          aws_secret_arn=os.environ["AWS_SECRET_ARN"]
+          aws_secret_key_name=os.environ["AWS_SECRET_KEY_NAME"]
+          dynatrace_openpipeline_security_endpoint=os.environ["DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT"]
+
+          # Retrieve OpenPipeline token from AWS Secrets Manager
+          session = boto3.session.Session()
+          secretsmanager = session.client(service_name="secretsmanager")
+          secret_resp = secretsmanager.get_secret_value(SecretId=aws_secret_arn)
+          serialized_secret = secret_resp["SecretString"]
+          secret = json.loads(serialized_secret)
+          openpipeline_token = secret[aws_secret_key_name]
+
+
+          def send_event_to_dynatrace(event: dict) -> None:
+              data = copy.deepcopy(event)
+              data["uuid"] = uuid4().hex
+              serialized = json.dumps(data, default=str)
+
+              parsed_url = urlparse(dynatrace_openpipeline_security_endpoint)
+              conn = http.client.HTTPSConnection(parsed_url.netloc)
+              conn.request(
+                  method="POST",
+                  url=dynatrace_openpipeline_security_endpoint,
+                  body=serialized,
+                  headers={
+                      "Authorization": f"Api-Token {openpipeline_token}",
+                      "Content-Type": "application/json",
+                  },
+              )
+
+              resp = conn.getresponse()
+              if resp.status > 299:
+                  print(f"Error sending data to OpenPipeline, response status is: {resp.status}")
+
+
+          def handle(event: dict, context: dict) -> dict:
+              try:
+                  # print(event)
+                  # Process the GuardDuty event
+                  resource: dict = event["detail"]["resource"]
+                  resource_type: str = resource["resourceType"]
+
+                  match resource_type:
+                      # The S3 related events are different from the rest: they contain an array of bucket details
+                      # representing target resources. While the rest of the events contain a single resource object.
+                      case "S3Bucket":
+                          bucket_details: list[dict] = resource["s3BucketDetails"]
+                          for bucket_detail in bucket_details:
+                              bucket_detail["s3ObjectDetails"] = [object_detail]
+                              event_copy = copy.deepcopy(event)
+                              event_copy["detail"]["resource"]["s3BucketDetails"] = [bucket_detail]
+                              send_event_to_dynatrace(event_copy)
+
+                      case "S3Object":
+                          bucket_details: list[dict] = resource["s3BucketDetails"]
+                          for bucket_detail in bucket_details:
+                              object_details: list[dict] = bucket_detail["s3ObjectDetails"]
+                              for object_detail in object_details:
+                                  bucket_detail_copy = copy.deepcopy(bucket_detail)
+                                  bucket_detail_copy["s3ObjectDetails"] = [object_detail]
+                                  event_copy = copy.deepcopy(event)
+                                  event_copy["detail"]["resource"]["s3BucketDetails"] = [bucket_detail_copy]
+                                  send_event_to_dynatrace(event_copy)
+
+                      case _:
+                          # Send as-is
+                          send_event_to_dynatrace(event)
+
+                  return {
+                      "statusCode": 200,
+                      "body": json.dumps("Executed OpenPipeline event export")
+                  }
+
+              except Exception as e:
+                  print(f"Error executing OpenPipeline event export: e")
+                  return {
+                      "statusCode": 500,
+                      "body": "Error executing OpenPipeline event export"
+                  }
+
+      Handler: "index.handle"
+      MemorySize: 128
+      Timeout: 600
+      Role: !GetAtt DynatraceAwsGuardDutyEventForwarderLambdaRole.Arn
+      Environment:
+        Variables:
+          AWS_SECRET_ARN: !Ref AwsSecretArn
+          AWS_SECRET_KEY_NAME: !Ref AwsSecretKeyName
+          DYNATRACE_OPENPIPELINE_SECURITY_ENDPOINT: !Ref DynatraceOpenPipelineEndpoint
+
+  DynatraceAwsGuardDutyEventForwarderLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${DynatraceAwsGuardDutyEventForwarderLambdaFunction}"
+      RetentionInDays: 14
+
+  DynatraceAwsGuardDutyFindingEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Forwards the GuardDuty findings to the Lambda function, which then sends them to OpenPipeline"
+      EventPattern:
+        detail-type:
+          - "GuardDuty Finding"
+        source:
+          - "aws.guardduty"
+      EventBusName: "default"
+      Targets:
+        - Arn: !GetAtt DynatraceAwsGuardDutyEventForwarderLambdaFunction.Arn
+          Id: "TargetFunction"
+
+  DynatraceAwsGuardDutyEventForwarderLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt DynatraceAwsGuardDutyEventForwarderLambdaFunction.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DynatraceAwsGuardDutyFindingEventRule.Arn
