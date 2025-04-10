@@ -52,7 +52,7 @@
                 "name": "dynatraceApiKey",
                 "type": "Microsoft.Common.PasswordBox",
                 "label": {
-                  "password": "Dynatrace API Key"
+                  "password": "Deployment Token"
                 },
                 "constraints": {
                   "required": true
@@ -64,7 +64,7 @@
               {
                 "name": "dynatraceTenant",
                 "type": "Microsoft.Common.TextBox",
-                "label": "Dynatrace Tenant",
+                "label": "Tenant ID",
                 "constraints": {
                   "required": true
                 }
@@ -79,7 +79,7 @@
               {
                 "name": "dynatraceIntegrationName",
                 "type": "Microsoft.Common.TextBox",
-                "label": "Dynatrace Monitoring Configuration ID",
+                "label": "Monitoring Configuration ID",
                 "constraints": {
                   "required": true
                 }
