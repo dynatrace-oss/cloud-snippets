@@ -161,7 +161,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         }
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: 'https://github.com/NoahGirard/cloud-snippets/raw/refs/heads/main/azure/msdc-security-event-forwarder/msdc_function_app.zip'
+          value: 'https://github.com/dynatrace-oss/cloud-snippets/raw/refs/heads/main/azure/msdc-security-event-forwarder/msdc_function_app.zip'
         }
       ]
       numberOfWorkers: 1
