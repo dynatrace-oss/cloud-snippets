@@ -76,7 +76,7 @@
           },
           {
             "name": "dynatraceApiKey",
-            "value": "[parameters('dynatraceApiKey')]"
+            "secureValue": "[parameters('dynatraceApiKey')]"
           },
           {
             "name": "dynatraceEnvironment",
