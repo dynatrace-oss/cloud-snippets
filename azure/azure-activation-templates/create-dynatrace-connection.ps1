@@ -26,12 +26,11 @@ $jsonBody = @"
                 "directoryId": "$($Env:directoryId)",
                 "applicationId": "$($Env:clientId)",
                 "clientSecret": "$($Env:clientSecret)",
-                "consumers": ["DA"]
+                "consumers": ["SVC:com.dynatrace.da"]
             },
             "name": "Dynatrace Azure Monitoring ($($Env:subscriptionId))",
             "type": "clientSecret"
         },
-        "schemaVersion": "0.0.3",
         "schemaId": "builtin:hyperscaler-authentication.connections.azure"
     }
 ]
