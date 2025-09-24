@@ -27,33 +27,27 @@ Parameters:
     Description: IAM policy name attached to the role for the account hosting the
       ActiveGate
     Default: Dynatrace_assume_policy
-  MonitoringRoleName:
-    Type: String
-    Description: IAM role name that Dynatrace should use to get monitoring data. This
-      must be the same name as the RoleName parameter used in the template for the 
-      monitored account.
-    Default: Dynatrace_monitoring_role
-  MonitoredAccountID:
-    Type: String
-    Description: ID of the account that Dynatrace should monitor
+  MonitoringRoleARNs:
+    Type: CommaDelimitedList
+    Description: List of ARNs for IAM roles that Dynatrace should use to get monitoring data.
+      Provide the full ARNs in the format arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME.
 Resources:
   DynatraceAssumePolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: !Ref 'AssumePolicyName'
+      ManagedPolicyName: !Ref AssumePolicyName
       Description: Dynatrace Assume Policy
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Resource:
-              - !Sub 'arn:aws:iam::${MonitoredAccountID}:role/${MonitoringRoleName}'
+          - Effect: Allow
             Action:
               - sts:AssumeRole
-            Effect: Allow
+            Resource: !Ref MonitoringRoleARNs
   DynatraceActiveGateRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref 'ActiveGateRoleName'
+      RoleName: !Ref ActiveGateRoleName
       Description: Dynatrace ActiveGate Role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -66,23 +60,20 @@ Resources:
               - sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-        - !Ref 'DynatraceAssumePolicy'
-  DynatraceActiveGateInstanceProfile: 
-    Type: "AWS::IAM::InstanceProfile"
+        - !Ref DynatraceAssumePolicy
+  DynatraceActiveGateInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: !Ref 'ActiveGateRoleName'
-      Roles: 
-        - Ref: 'DynatraceActiveGateRole'
+      InstanceProfileName: !Ref ActiveGateRoleName
+      Roles:
+        - Ref: DynatraceActiveGateRole
 Outputs:
   ActiveGateRoleName:
     Description: IAM role name for the account hosting the ActiveGate
-    Value: !Ref 'ActiveGateRoleName'
+    Value: !Ref ActiveGateRoleName
   ActiveGateAccountID:
     Description: Your Amazon account ID hosting the ActiveGate
-    Value: !Ref 'AWS::AccountId'
-  MonitoringRoleName:
-    Description: IAM role that Dynatrace should use to get monitoring data
-    Value: !Ref 'MonitoringRoleName'
-  MonitoredAccountID:
-    Description: ID of the account that Dynatrace should monitor
-    Value: !Ref 'MonitoredAccountID'
+    Value: !Ref AWS::AccountId
+  MonitoringRoleARNs:
+    Description: ARNs of the IAM roles that Dynatrace should use to get monitoring data
+    Value: !Join [",", !Ref MonitoringRoleARNs]
