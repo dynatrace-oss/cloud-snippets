@@ -15,7 +15,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Role-based access for Managed and SaaS deployments with 
   Environment ActiveGate
-  Example: arn:aws:iam::111111111:role/Dynatrace_Monitoring_Role, arn:aws:iam::222222222:role/Dynatrace_Monitoring_Role
 Parameters:
   ActiveGateRoleName:
     Type: String
@@ -76,5 +75,5 @@ Outputs:
     Description: Your Amazon account ID hosting the ActiveGate
     Value: !Ref AWS::AccountId
   MonitoringRoleARNs:
-    Description: ARNs of the IAM roles that Dynatrace should use to get monitoring data
+    Description: ARNs of the IAM roles that Dynatrace should use to get monitoring data Example: arn:aws:iam::111111111:role/Dynatrace_Monitoring_Role, arn:aws:iam::222222222:role/Dynatrace_Monitoring_Role
     Value: !Join [",", !Ref MonitoringRoleARNs]
