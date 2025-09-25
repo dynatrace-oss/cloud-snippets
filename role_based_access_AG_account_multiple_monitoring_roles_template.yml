@@ -15,6 +15,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Role-based access for Managed and SaaS deployments with 
   Environment ActiveGate
+  Example: arn:aws:iam::111111111:role/Dynatrace_Monitoring_Role, arn:aws:iam::222222222:role/Dynatrace_Monitoring_Role
 Parameters:
   ActiveGateRoleName:
     Type: String
