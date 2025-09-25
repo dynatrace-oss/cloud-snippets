@@ -31,6 +31,7 @@ Parameters:
     Type: CommaDelimitedList
     Description: List of ARNs for IAM roles that Dynatrace should use to get monitoring data.
       Provide the full ARNs in the format arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME.
+      Example: arn:aws:iam::111111111:role/Dynatrace_Monitoring_Role, arn:aws:iam::222222222:role/Dynatrace_Monitoring_Role
 Resources:
   DynatraceAssumePolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -75,5 +76,5 @@ Outputs:
     Description: Your Amazon account ID hosting the ActiveGate
     Value: !Ref AWS::AccountId
   MonitoringRoleARNs:
-    Description: ARNs of the IAM roles that Dynatrace should use to get monitoring data Example: arn:aws:iam::111111111:role/Dynatrace_Monitoring_Role, arn:aws:iam::222222222:role/Dynatrace_Monitoring_Role
+    Description: ARNs of the IAM roles that Dynatrace should use to get monitoring data
     Value: !Join [",", !Ref MonitoringRoleARNs]
