@@ -17,6 +17,7 @@ $activationData = @{}
 
 $environment = "$($Env:dynatraceEnvironment ?? 'live')"
 $has_endpoint = "https://$Env:dynatraceTenant.$environment.dynatracelabs.com/api/v2/settings/objects?validateOnly=false&adminAccess=false"
+$randomString = -join ((65..90 + 97..122) | Get-Random -Count 8 | ForEach-Object { [char]$_ })
 
 $jsonBody = @"
 [
@@ -28,7 +29,7 @@ $jsonBody = @"
                 "clientSecret": "$($Env:clientSecret)",
                 "consumers": ["SVC:com.dynatrace.da"]
             },
-            "name": "Dynatrace Azure Monitoring ($($Env:subscriptionId))",
+            "name": "da_azure_connection_$randomString",
             "type": "clientSecret"
         },
         "schemaId": "builtin:hyperscaler-authentication.connections.azure"
@@ -51,7 +52,7 @@ try
 
     if ($response.StatusCode -eq 200) {
         $jsonResponse = $response.Content | ConvertFrom-Json
-        
+
         $activationData['connectionId'] = $jsonResponse[0].objectId
         Write-Output $activationData['connectionId']
     } else {
