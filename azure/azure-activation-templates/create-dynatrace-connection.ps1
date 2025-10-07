@@ -4,8 +4,7 @@ $requiredEnvVars = @(
     'dynatraceConfigurationId', 
     'directoryId', 
     'clientId', 
-    'clientSecret', 
-    'subscriptionId')
+    'clientSecret')
 
 foreach ($var in $requiredEnvVars) {
     if (-not (Test-Path "Env:$var")) {
@@ -83,7 +82,6 @@ try
 
     if ($response.StatusCode -eq 200) {
         $configurationObject = $response.Content | ConvertFrom-Json
-        $configurationObject.value.azure.subscriptionFiltering = @($Env:subscriptionId)
         $configurationObject.value.azure.credentials[0].connectionId = $activationData['connectionId']
         $configurationObject.value.azure.credentials[0] | Add-Member -NotePropertyName servicePrincipalId -NotePropertyValue $Env:clientId
         $configurationObject.value.azure.credentials[0].enabled = $true
