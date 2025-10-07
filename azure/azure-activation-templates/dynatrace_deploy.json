@@ -67,10 +67,6 @@
       "properties": {
         "environmentVariables": [
           {
-            "name": "subscriptionId",
-            "value": "[parameters('monitoredSubscription')]"
-          },
-          {
             "name": "dynatraceTenant",
             "value": "[parameters('dynatraceTenant')]"
           },
