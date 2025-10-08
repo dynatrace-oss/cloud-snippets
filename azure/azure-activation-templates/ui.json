@@ -68,6 +68,23 @@
                 "constraints": {
                   "required": true
                 }
+              },
+              {
+                "name": "environmentChoice",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Environment",
+                "toolTip": "Select the stage of your Dynatrace environment",
+                "options": {
+                  "multiSelect": false
+                },
+                "constraints": {
+                  "required": true,
+                  "allowedValues": [
+                    { "label": "dev", "value": "dev" },
+                    { "label": "sprint", "value": "sprint" }
+                  ]
+                },
+                "placeholder": "Select the stage of your Dynatrace environment"
               }
             ]
           },
@@ -112,6 +129,7 @@
       "servicePrincipalSecretKey": "[steps('servicePrincipalConfiguration').ServicePrincipal.password]",
       "dynatraceApiKey": "[steps('dynatraceConfiguration').DynatraceIntegration.dynatraceApiKey]",
       "dynatraceTenant": "[steps('dynatraceConfiguration').DynatraceIntegration.dynatraceTenant]",
+      "dynatraceEnvironment": "[steps('dynatraceConfiguration').DynatraceIntegration.environmentChoice]",
       "dynatraceIntegrationName": "[steps('dynatraceConfiguration').MonitoringConfiguration.dynatraceIntegrationName]"
     }
   }

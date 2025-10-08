@@ -1,6 +1,7 @@
 $requiredEnvVars = @(
     'dynatraceApiKey', 
     'dynatraceTenant',
+    'dynatraceEnvironment',
     'dynatraceConfigurationId', 
     'directoryId', 
     'clientId', 
@@ -14,8 +15,7 @@ foreach ($var in $requiredEnvVars) {
 
 $activationData = @{}
 
-$environment = "$($Env:dynatraceEnvironment ?? 'live')"
-$has_endpoint = "https://$Env:dynatraceTenant.$environment.dynatracelabs.com/api/v2/settings/objects?validateOnly=false&adminAccess=false"
+$has_endpoint = "https://$Env:dynatraceTenant.$Env:dynatraceEnvironment.dynatracelabs.com/api/v2/settings/objects?validateOnly=false&adminAccess=false"
 $randomString = -join ((65..90 + 97..122) | Get-Random -Count 8 | ForEach-Object { [char]$_ })
 
 $jsonBody = @"
@@ -63,7 +63,7 @@ catch {
 }
 
 $extensionName = "com.dynatrace.extension.da-azure"
-$efx_endpoint = "https://$Env:dynatraceTenant.$environment.dynatracelabs.com/api/v2/extensions/$extensionName/monitoringConfigurations"
+$efx_endpoint = "https://$Env:dynatraceTenant.$Env:dynatraceEnvironment.dynatracelabs.com/api/v2/extensions/$extensionName/monitoringConfigurations"
 
 $configurationObject = $null
 
