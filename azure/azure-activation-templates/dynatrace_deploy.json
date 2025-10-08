@@ -23,6 +23,9 @@
     "dynatraceTenant": {
       "type": "string"
     },
+    "dynatraceEnvironment": {
+      "type": "string"
+    },
     "dynatraceIntegrationName": {
       "type": "string"
     },
@@ -76,7 +79,7 @@
           },
           {
             "name": "dynatraceEnvironment",
-            "value": "dev"
+            "value": "[parameters('dynatraceEnvironment')]"
           },
           {
             "name": "dynatraceConfigurationId",
