@@ -112,6 +112,7 @@
       "apiVersion": "2020-06-01",
       "name": "pid-d5da5f8a-9ca4-4ed4-853b-b703f95af008",
       "type": "Microsoft.Resources/deployments",
+      "location": "[deployment().location]",
       "properties": {
         "mode": "Incremental",
         "template": {
