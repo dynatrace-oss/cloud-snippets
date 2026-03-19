@@ -109,6 +109,20 @@
   },
   "resources": [
     {
+      "apiVersion": "2020-06-01",
+      "name": "pid-d5da5f8a-9ca4-4ed4-853b-b703f95af008",
+      "type": "Microsoft.Resources/deployments",
+      "location": "[deployment().location]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": []
+        }
+      }
+    },
+    {
       "copy": {
         "name": "resourceGroups",
         "count": "[length(parameters('locations'))]"
