@@ -8,6 +8,11 @@ readonly ALPINE_RELEASE_FILE="/etc/alpine-release"
 readonly INSTALLER_DOWNLOAD_PATH="/tmp/installer.sh"
 readonly INSTALLER_URL_SUFFIX="api/v1/deployment/installer/agent/unix/paas-sh/latest"
 
+# When set to "false", disables SSL certificate validation, allowing downloads
+# from endpoints with self-signed or untrusted certificates.
+# Default: true (strict certificate validation)
+DT_CHECK_CERT="${DT_CHECK_CERT:-true}"
+
 # Try using ldd command
 check_ldd() {
 
@@ -36,7 +41,14 @@ run() {
     # this trims one trailing slash
     DT_ENDPOINT=$(echo "${DT_ENDPOINT%/}")
 
-    wget -O "$INSTALLER_DOWNLOAD_PATH" -q "$DT_ENDPOINT/$INSTALLER_URL_SUFFIX?Api-Token=$DT_API_TOKEN&flavor=$DT_FLAVOR&include=$DT_INCLUDE"
+    WGET_OPTS="-q"
+    if [ "$DT_CHECK_CERT" = "false" ]; then
+        echo "WARNING: SSL certificate validation is disabled. Use only in trusted environments."
+        WGET_OPTS="$WGET_OPTS --no-check-certificate"
+    fi
+
+    # shellcheck disable=SC2086
+    wget $WGET_OPTS -O "$INSTALLER_DOWNLOAD_PATH" "$DT_ENDPOINT/$INSTALLER_URL_SUFFIX?Api-Token=$DT_API_TOKEN&flavor=$DT_FLAVOR&include=$DT_INCLUDE"
     sh "$INSTALLER_DOWNLOAD_PATH"
 
     # Inject variable into the proccess and run the actual application proccess
