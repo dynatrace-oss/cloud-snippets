@@ -89,26 +89,18 @@
             "visible": true,
             "options": {
               "icon": "Info",
-              "text": "Make sure to select the same service principal you used during onboarding in Dynatrace. Not sure which one it was? No worries — you can look it up using Service Principal ID displayed in the Dynatrace onboarding wizard."
+              "text": "Enter the Object ID of the service principal you used during onboarding in Dynatrace. You can find it in the Dynatrace onboarding wizard under Principal (object) ID."
             }
           },
           {
             "name": "dtServicePrincipal",
-            "type": "Microsoft.Common.ServicePrincipalSelector",
-            "label": {
-              "principalId": "Service Principal ID",
-              "password": "Secret key",
-              "sectionHeader": "Select Dynatrace Service Principal"
-            },
-            "defaultValue": {
-              "principalId": "<default guid>",
-              "name": "(New) default App Id"
-            },
+            "type": "Microsoft.Common.TextBox",
+            "label": "Service Principal (object) ID",
+            "toolTip": "The Object ID (not Application/Client ID) of the Dynatrace service principal (UUID format)",
             "constraints": {
-              "required": false
-            },
-            "options": {
-              "hideCertificate": true
+              "required": true,
+              "regex": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+              "validationMessage": "Must be a valid UUID (e.g., 592b6da9-9ce2-4ead-9e24-55bdae3bfaf7)"
             }
           }
         ]
@@ -337,7 +329,7 @@
       "locations": "[steps('eventHubConfig').locations]",
       "dtTenantId": "[steps('dynatraceConfig').dtTenantId]",
       "dtConfigId": "[steps('dynatraceConfig').dtConfigId]",
-      "dtMonitoringServicePrincipalId": "[first(steps('dynatraceConfig').dtServicePrincipal.objectId)]",
+      "dtMonitoringServicePrincipalId": "[steps('dynatraceConfig').dtServicePrincipal]",
       "skuName": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"sku\":\"Basic\"},{\"config\":\"Small\",\"sku\":\"Standard\"},{\"config\":\"Medium\",\"sku\":\"Standard\"},{\"config\":\"Large\",\"sku\":\"Standard\"}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.sku)), steps('eventHubConfig').eventHubNamespace.skuName)]",
       "skuCapacity": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').eventHubNamespace.skuCapacity, 1)]",
       "maximumThroughputUnits": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"maxTU\":1},{\"config\":\"Small\",\"maxTU\":2},{\"config\":\"Medium\",\"maxTU\":4},{\"config\":\"Large\",\"maxTU\":16}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.maxTU)), steps('eventHubConfig').eventHubNamespace.maximumThroughputUnits)]",
