@@ -98,6 +98,13 @@
       "metadata": {
         "description": "Additional custom tags"
       }
+    },
+    "evhnsSuffix": {
+      "type": "string",
+      "defaultValue": "[substring(guid(utcNow()), 0, 4)]",
+      "metadata": {
+        "description": "Optional suffix appended to the Event Hub Namespace name (e.g. 'a1b2' → evhns-dt-<tenant>-<location>-a1b2). If not specified, a random 4-character value is generated. Pass a fixed value to target an existing namespace on re-deployment; pass \"\" to omit the suffix entirely."
+      }
     }
   },
   "variables": {
@@ -151,7 +158,11 @@
             "evhEventsPartitionCount": {"type": "int"},
             "evhLogsRetentionInDays": {"type": "int"},
             "evhEventsRetentionInDays": {"type": "int"},
-            "tags": {"type": "object"}
+            "tags": {"type": "object"},
+            "evhnsSuffix": {"type": "string"}
+          },
+          "variables": {
+            "evhnsName": "[if(empty(parameters('evhnsSuffix')), format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('location')), format('evhns-dt-{0}-{1}-{2}', parameters('dtTenantId'), parameters('location'), parameters('evhnsSuffix')))]"
           },
           "resources": [
             {
@@ -170,7 +181,7 @@
             {
               "type": "Microsoft.EventHub/namespaces",
               "apiVersion": "2021-11-01",
-              "name": "[format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('location'))]",
+              "name": "[variables('evhnsName')]",
               "location": "[parameters('location')]",
               "sku": {
                 "name": "[parameters('skuName')]",
@@ -186,9 +197,9 @@
             {
               "type": "Microsoft.EventHub/namespaces/eventhubs",
               "apiVersion": "2021-11-01",
-              "name": "[format('evhns-dt-{0}-{1}/dt-logs-evh', parameters('dtTenantId'), parameters('location'))]",
+              "name": "[format('{0}/dt-logs-evh', variables('evhnsName'))]",
               "dependsOn": [
-                "[resourceId('Microsoft.EventHub/namespaces', format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('location')))]"
+                "[resourceId('Microsoft.EventHub/namespaces', variables('evhnsName'))]"
               ],
               "properties": {
                 "messageRetentionInDays": "[parameters('evhLogsRetentionInDays')]",
@@ -199,9 +210,9 @@
             {
               "type": "Microsoft.EventHub/namespaces/eventhubs",
               "apiVersion": "2021-11-01",
-              "name": "[format('evhns-dt-{0}-{1}/dt-events-evh', parameters('dtTenantId'), parameters('location'))]",
+              "name": "[format('{0}/dt-events-evh', variables('evhnsName'))]",
               "dependsOn": [
-                "[resourceId('Microsoft.EventHub/namespaces', format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('location')))]"
+                "[resourceId('Microsoft.EventHub/namespaces', variables('evhnsName'))]"
               ],
               "properties": {
                 "messageRetentionInDays": "[parameters('evhEventsRetentionInDays')]",
@@ -223,7 +234,8 @@
           "evhEventsPartitionCount": {"value": "[parameters('evhEventsPartitionCount')]"},
           "evhLogsRetentionInDays": {"value": "[parameters('evhLogsRetentionInDays')]"},
           "evhEventsRetentionInDays": {"value": "[parameters('evhEventsRetentionInDays')]"},
-          "tags": {"value": "[parameters('tags')]"}
+          "tags": {"value": "[parameters('tags')]"},
+          "evhnsSuffix": {"value": "[parameters('evhnsSuffix')]"}
         }
       }
     },
@@ -294,7 +306,7 @@
       "type": "array",
       "copy": {
         "count": "[length(parameters('locations'))]",
-        "input": "[format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('locations')[copyIndex()])]"
+        "input": "[if(empty(parameters('evhnsSuffix')), format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('locations')[copyIndex()]), format('evhns-dt-{0}-{1}-{2}', parameters('dtTenantId'), parameters('locations')[copyIndex()], parameters('evhnsSuffix')))]"
       },
       "metadata": {
         "description": "Array of deployed Event Hub namespace names"
