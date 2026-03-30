@@ -13,6 +13,10 @@ readonly INSTALLER_URL_SUFFIX="api/v1/deployment/installer/agent/unix/paas-sh/la
 # Default: true (strict certificate validation)
 DT_CHECK_CERT="${DT_CHECK_CERT:-true}"
 
+# When set to "true", enables verbose wget output for debugging download failures.
+# Default: false (quiet mode)
+DT_DEBUG="${DT_DEBUG:-false}"
+
 # Try using ldd command
 check_ldd() {
 
@@ -41,7 +45,8 @@ run() {
     # this trims one trailing slash
     DT_ENDPOINT=$(echo "${DT_ENDPOINT%/}")
 
-    WGET_OPTS="-q"
+    [ "$DT_DEBUG" = "true" ] && WGET_OPTS="-v" || WGET_OPTS="-q"
+
     if [ "$DT_CHECK_CERT" = "false" ]; then
         echo "WARNING: SSL certificate validation is disabled. Use only in trusted environments."
         WGET_OPTS="$WGET_OPTS --no-check-certificate"

@@ -81,3 +81,22 @@ This repository contains resources for deploying web applications on Azure App S
    ```az webapp deploy -g linux-app-service -n app-node-16 --src-path node.zip```
 
 4. Restart your application once or twice.
+
+## Debugging
+
+If the script cannot download the OneAgent installer, enable verbose wget logging in `oneagent-installer.sh` by setting:
+
+```bash
+DT_DEBUG=true
+```
+
+Details:
+
+- The script uses `WGET_OPTS="-q"` by default (quiet mode), so wget errors are minimal.
+- When `DT_DEBUG=true`, the script switches **wget** to `-v` (verbose mode).
+- Verbose mode prints connection details, redirects, TLS handshake information, HTTP status, and response headers, which helps identify whether the failure is caused by DNS, TLS/certificate trust, authentication token, endpoint URL, or network access.
+
+Related options:
+
+- `DT_CHECK_CERT=false` adds `--no-check-certificate` to **wget**.
+- Use it only for troubleshooting in trusted environments, because it disables TLS certificate validation.
