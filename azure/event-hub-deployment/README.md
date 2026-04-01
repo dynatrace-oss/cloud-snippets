@@ -41,10 +41,10 @@ The UI definition guides you through three steps:
 
 | Preset | SKU | Baseline TU | Max TU (Auto-inflate) | Log Partitions | Event Partitions | Max Throughput |
 |--------|-----|-------------|----------------------|----------------|-----------------|----------------|
-| Dev/Test | Basic | 1 | — | 1 | 1 | 7.2 GB/hour |
-| Small | Standard | 1 | 2 | 2 | 1 | 14.4 GB/hour |
-| Medium | Standard | 1 | 4 | 4 | 1 | 57.6 GB/hour |
-| Large | Standard | 1 | 16 | 16 | 2 | 115.2 GB/hour |
+| Dev/Test | Basic | 1 | — | 1 | 1 | 3.6 GB/hour |
+| Small | Standard | 1 | 4 | 4 | 1 | 14.4 GB/hour |
+| Medium | Standard | 1 | 16 | 16 | 1 | 57.6 GB/hour |
+| Large | Standard | 1 | 32 | 32 | 2 | 115.2 GB/hour |
 | Custom | Configurable | Configurable | Configurable | Configurable | Configurable | — |
 
 ## CLI Deployment

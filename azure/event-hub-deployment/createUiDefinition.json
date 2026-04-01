@@ -142,7 +142,7 @@
               "required": true,
               "allowedValues": [
                 {
-                  "label": "Dev/Test (Max Throughput: 7.2 GB/hour)",
+                  "label": "Dev/Test (Max Throughput: 3.6 GB/hour)",
                   "value": "DevTest"
                 },
                 {
@@ -332,8 +332,8 @@
       "dtMonitoringServicePrincipalId": "[steps('dynatraceConfig').dtServicePrincipal]",
       "skuName": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"sku\":\"Basic\"},{\"config\":\"Small\",\"sku\":\"Standard\"},{\"config\":\"Medium\",\"sku\":\"Standard\"},{\"config\":\"Large\",\"sku\":\"Standard\"}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.sku)), steps('eventHubConfig').eventHubNamespace.skuName)]",
       "skuCapacity": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').eventHubNamespace.skuCapacity, 1)]",
-      "maximumThroughputUnits": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"maxTU\":1},{\"config\":\"Small\",\"maxTU\":2},{\"config\":\"Medium\",\"maxTU\":4},{\"config\":\"Large\",\"maxTU\":16}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.maxTU)), steps('eventHubConfig').eventHubNamespace.maximumThroughputUnits)]",
-      "evhLogsPartitionCount": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"partitions\":1},{\"config\":\"Small\",\"partitions\":2},{\"config\":\"Medium\",\"partitions\":4},{\"config\":\"Large\",\"partitions\":16}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.partitions)), int(steps('eventHubConfig').logsEventHub.partitionCount))]",
+      "maximumThroughputUnits": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"maxTU\":1},{\"config\":\"Small\",\"maxTU\":4},{\"config\":\"Medium\",\"maxTU\":16},{\"config\":\"Large\",\"maxTU\":32}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.maxTU)), steps('eventHubConfig').eventHubNamespace.maximumThroughputUnits)]",
+      "evhLogsPartitionCount": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"partitions\":1},{\"config\":\"Small\",\"partitions\":4},{\"config\":\"Medium\",\"partitions\":16},{\"config\":\"Large\",\"partitions\":32}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.partitions)), int(steps('eventHubConfig').logsEventHub.partitionCount))]",
       "evhLogsRetentionInDays": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').logsEventHub.retentionInDays, 1)]",
       "evhEventsPartitionCount": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"partitions\":1},{\"config\":\"Small\",\"partitions\":1},{\"config\":\"Medium\",\"partitions\":1},{\"config\":\"Large\",\"partitions\":2}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.partitions)), int(steps('eventHubConfig').eventsEventHub.partitionCount))]",
       "evhEventsRetentionInDays": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').eventsEventHub.retentionInDays, 1)]",
