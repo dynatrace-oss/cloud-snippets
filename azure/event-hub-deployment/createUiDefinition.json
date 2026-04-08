@@ -253,7 +253,8 @@
                 "toolTip": "Number of days to retain log messages (1-7)",
                 "constraints": {
                   "required": true
-                }
+                },
+                "visible": "[not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))]"
               }
             ]
           },
@@ -294,7 +295,8 @@
                 "toolTip": "Number of days to retain event messages (1-7)",
                 "constraints": {
                   "required": true
-                }
+                },
+                "visible": "[not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))]"
               }
             ]
           }
@@ -334,9 +336,9 @@
       "skuCapacity": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').eventHubNamespace.skuCapacity, 1)]",
       "maximumThroughputUnits": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"maxTU\":1},{\"config\":\"Small\",\"maxTU\":4},{\"config\":\"Medium\",\"maxTU\":16},{\"config\":\"Large\",\"maxTU\":32}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.maxTU)), steps('eventHubConfig').eventHubNamespace.maximumThroughputUnits)]",
       "evhLogsPartitionCount": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"partitions\":1},{\"config\":\"Small\",\"partitions\":4},{\"config\":\"Medium\",\"partitions\":16},{\"config\":\"Large\",\"partitions\":32}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.partitions)), int(steps('eventHubConfig').logsEventHub.partitionCount))]",
-      "evhLogsRetentionInDays": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').logsEventHub.retentionInDays, 1)]",
+      "evhLogsRetentionInDays": "[if(and(equals(steps('eventHubConfig').configurationSize, 'Custom'), not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))), steps('eventHubConfig').logsEventHub.retentionInDays, 1)]",
       "evhEventsPartitionCount": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"partitions\":1},{\"config\":\"Small\",\"partitions\":1},{\"config\":\"Medium\",\"partitions\":1},{\"config\":\"Large\",\"partitions\":2}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.partitions)), int(steps('eventHubConfig').eventsEventHub.partitionCount))]",
-      "evhEventsRetentionInDays": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').eventsEventHub.retentionInDays, 1)]",
+      "evhEventsRetentionInDays": "[if(and(equals(steps('eventHubConfig').configurationSize, 'Custom'), not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))), steps('eventHubConfig').eventsEventHub.retentionInDays, 1)]",
       "tags": "[steps('tags').customTags]"
     },
     "resourceTypes": [
