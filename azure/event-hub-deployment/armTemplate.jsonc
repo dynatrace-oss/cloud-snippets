@@ -162,7 +162,13 @@
             "evhnsSuffix": {"type": "string"}
           },
           "variables": {
-            "evhnsName": "[if(empty(parameters('evhnsSuffix')), format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('location')), format('evhns-dt-{0}-{1}-{2}', parameters('dtTenantId'), parameters('location'), parameters('evhnsSuffix')))]"
+            "evhnsName": "[if(empty(parameters('evhnsSuffix')), format('evhns-dt-{0}-{1}', parameters('dtTenantId'), parameters('location')), format('evhns-dt-{0}-{1}-{2}', parameters('dtTenantId'), parameters('location'), parameters('evhnsSuffix')))]",
+            "isBasicSku": "[equals(toLower(parameters('skuName')), 'basic')]",
+            // Basic SKU does not support custom consumer groups (only $Default is allowed)
+            "isNotBasicSku": "[not(variables('isBasicSku'))]",
+            // Basic SKU caps message retention at 1 day; coerce to avoid deployment failure
+            "effectiveLogsRetentionInDays": "[if(variables('isBasicSku'), 1, parameters('evhLogsRetentionInDays'))]",
+            "effectiveEventsRetentionInDays": "[if(variables('isBasicSku'), 1, parameters('evhEventsRetentionInDays'))]"
           },
           "resources": [
             {
@@ -202,10 +208,19 @@
                 "[resourceId('Microsoft.EventHub/namespaces', variables('evhnsName'))]"
               ],
               "properties": {
-                "messageRetentionInDays": "[parameters('evhLogsRetentionInDays')]",
+                "messageRetentionInDays": "[variables('effectiveLogsRetentionInDays')]",
                 "partitionCount": "[parameters('evhLogsPartitionCount')]"
               }
               // Note: Tags cannot be applied to Event Hubs.
+            },
+            {
+              "condition": "[variables('isNotBasicSku')]",
+              "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/dt-logs-evh/dynatrace', variables('evhnsName'))]",
+              "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('evhnsName'), 'dt-logs-evh')]"
+              ]
             },
             {
               "type": "Microsoft.EventHub/namespaces/eventhubs",
@@ -215,10 +230,19 @@
                 "[resourceId('Microsoft.EventHub/namespaces', variables('evhnsName'))]"
               ],
               "properties": {
-                "messageRetentionInDays": "[parameters('evhEventsRetentionInDays')]",
+                "messageRetentionInDays": "[variables('effectiveEventsRetentionInDays')]",
                 "partitionCount": "[parameters('evhEventsPartitionCount')]"
               }
               // Note: Tags cannot be applied to Event Hubs.
+            },
+            {
+              "condition": "[variables('isNotBasicSku')]",
+              "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+              "apiVersion": "2021-11-01",
+              "name": "[format('{0}/dt-events-evh/dynatrace', variables('evhnsName'))]",
+              "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', variables('evhnsName'), 'dt-events-evh')]"
+              ]
             }
           ]
         },
