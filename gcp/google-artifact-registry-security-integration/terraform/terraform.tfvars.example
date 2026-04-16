@@ -1,0 +1,6 @@
+project_id                = "YOUR_PROJECT_ID"
+region                    = "europe-west1"
+gcp_org_id                = "123456789"
+gcp_org_name              = "your-organization"
+dt_base_url               = "https://YOUR_ENV.live.dynatrace.com"
+dt_api_token_secret_id    = "mytenant-secret-id"
