@@ -10,10 +10,10 @@ Subscription-level ARM template with an Azure Portal UI definition for deploying
 
 ## Repository Structure
 
-| File | Description |
-|------|-------------|
-| `armTemplate.jsonc` | ARM template (subscription-level) that deploys resource groups, Event Hub namespaces, Event Hubs, and RBAC role assignments |
-| `createUiDefinition.json` | Azure Portal UI definition providing a guided wizard for configuring the deployment |
+| File                      | Description                                                                                                                 |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `armTemplate.jsonc`       | ARM template (subscription-level) that deploys resource groups, Event Hub namespaces, Event Hubs, and RBAC role assignments |
+| `createUiDefinition.json` | Azure Portal UI definition providing a guided wizard for configuring the deployment                                         |
 
 ## What Gets Deployed
 
@@ -39,13 +39,13 @@ The UI definition guides you through three steps:
 
 ### Configuration Size Presets
 
-| Preset | SKU | Baseline TU | Max TU (Auto-inflate) | Log Partitions | Event Partitions | Max Throughput |
-|--------|-----|-------------|----------------------|----------------|-----------------|----------------|
-| Dev/Test | Basic | 1 | — | 1 | 1 | 3.6 GB/hour |
-| Small | Standard | 1 | 4 | 4 | 1 | 14.4 GB/hour |
-| Medium | Standard | 1 | 16 | 16 | 1 | 57.6 GB/hour |
-| Large | Standard | 1 | 32 | 32 | 2 | 115.2 GB/hour |
-| Custom | Configurable | Configurable | Configurable | Configurable | Configurable | — |
+| Preset   | SKU          | Baseline TU  | Max TU (Auto-inflate) | Log Partitions | Event Partitions | Max Throughput |
+|----------|--------------|--------------|-----------------------|----------------|------------------|----------------|
+| Dev/Test | Basic        | 1            | —                     | 1              | 1                | 3.6 GB/hour    |
+| Small    | Standard     | 1            | 4                     | 4              | 1                | 14.4 GB/hour   |
+| Medium   | Standard     | 1            | 16                    | 16             | 1                | 57.6 GB/hour   |
+| Large    | Standard     | 1            | 32                    | 32             | 2                | 115.2 GB/hour  |
+| Custom   | Configurable | Configurable | Configurable          | Configurable   | Configurable     | —              |
 
 ## CLI Deployment
 
@@ -77,42 +77,42 @@ az deployment sub create \
                tags='{"cost-center": "platform-team", "environment": "production"}'
 ```
 
-> **Note:** The `dtMonitoringServicePrincipalId` parameter requires the service principal **Object ID** (not the App/Client ID). You can retrieve it with:
+> **Note:** The `dtMonitoringServicePrincipalId` parameter requires the service principal **Object ID** (not the App/Client ID) of Enterprise Application. You can retrieve it with:
 > ```bash
 > az ad sp show --id <app-id> --query id -o tsv
 > ```
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `locations` | array | *(required)* | Azure locations for Event Hub namespace deployment |
-| `dtTenantId` | string | *(required)* | Dynatrace tenant ID used in resource naming |
-| `dtConfigId` | string | *(required)* | Monitoring configuration ID for tagging and autodiscovery |
-| `dtMonitoringServicePrincipalId` | string | *(required)* | Service principal Object ID for RBAC assignment |
-| `evhnsSuffix` | string | *(auto-generated)* | Optional suffix appended to the Event Hub Namespace name. If not specified, a random 4-character value is generated. Pass a fixed value to target an existing namespace on re-deployment. Pass `""` to omit the suffix entirely. |
-| `skuName` | string | `Standard` | Namespace SKU: Basic, Standard, or Premium |
-| `skuCapacity` | int | `1` | Baseline throughput units (1–20) |
-| `maximumThroughputUnits` | int | `10` | Max throughput units for auto-inflate (1–40, Standard SKU only) |
-| `evhLogsPartitionCount` | int | `4` | Partition count for `dt-logs-evh` (1–32) |
-| `evhLogsRetentionInDays` | int | `1` | Message retention in days for `dt-logs-evh` (1–7) |
-| `evhEventsPartitionCount` | int | `1` | Partition count for `dt-events-evh` (1 or 2) |
-| `evhEventsRetentionInDays` | int | `1` | Message retention in days for `dt-events-evh` (1–7) |
-| `tags` | object | `{}` | Additional custom tags (supports per-resource-type tags) |
+| Parameter                        | Type   | Default            | Description                                                                                                                                                                                                                      |
+|----------------------------------|--------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `locations`                      | array  | *(required)*       | Azure locations for Event Hub namespace deployment                                                                                                                                                                               |
+| `dtTenantId`                     | string | *(required)*       | Dynatrace tenant ID used in resource naming                                                                                                                                                                                      |
+| `dtConfigId`                     | string | *(required)*       | Monitoring configuration ID for tagging and autodiscovery                                                                                                                                                                        |
+| `dtMonitoringServicePrincipalId` | string | *(required)*       | Service principal Object ID (of Enterprise Application) for RBAC assignment                                                                                                                                                      |
+| `evhnsSuffix`                    | string | *(auto-generated)* | Optional suffix appended to the Event Hub Namespace name. If not specified, a random 4-character value is generated. Pass a fixed value to target an existing namespace on re-deployment. Pass `""` to omit the suffix entirely. |
+| `skuName`                        | string | `Standard`         | Namespace SKU: Basic, Standard, or Premium                                                                                                                                                                                       |
+| `skuCapacity`                    | int    | `1`                | Baseline throughput units (1–20)                                                                                                                                                                                                 |
+| `maximumThroughputUnits`         | int    | `10`               | Max throughput units for auto-inflate (1–40, Standard SKU only)                                                                                                                                                                  |
+| `evhLogsPartitionCount`          | int    | `4`                | Partition count for `dt-logs-evh` (1–32)                                                                                                                                                                                         |
+| `evhLogsRetentionInDays`         | int    | `1`                | Message retention in days for `dt-logs-evh` (1–7)                                                                                                                                                                                |
+| `evhEventsPartitionCount`        | int    | `1`                | Partition count for `dt-events-evh` (1 or 2)                                                                                                                                                                                     |
+| `evhEventsRetentionInDays`       | int    | `1`                | Message retention in days for `dt-events-evh` (1–7)                                                                                                                                                                              |
+| `tags`                           | object | `{}`               | Additional custom tags (supports per-resource-type tags)                                                                                                                                                                         |
 
 ## Outputs
 
-| Output | Type | Description |
-|--------|------|-------------|
+| Output               | Type  | Description                                                                                                           |
+|----------------------|-------|-----------------------------------------------------------------------------------------------------------------------|
 | `deployedNamespaces` | array | Names of deployed Event Hub namespaces, e.g. `["evhns-dt-abc12345-eastus-a1b2", "evhns-dt-abc12345-westeurope-a1b2"]` |
 
 ## Naming Conventions
 
 Following [Azure Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming) naming conventions:
 
-| Resource | Format | Example |
-|----------|--------|---------|
-| Resource Group | `rg-dt-{dtTenantId}-{location}` | `rg-dt-abc12345-eastus` |
+| Resource            | Format                                             | Example                         |
+|---------------------|----------------------------------------------------|---------------------------------|
+| Resource Group      | `rg-dt-{dtTenantId}-{location}`                    | `rg-dt-abc12345-eastus`         |
 | Event Hub Namespace | `evhns-dt-{dtTenantId}-{location}[-{evhnsSuffix}]` | `evhns-dt-abc12345-eastus-a1b2` |
-| Event Hub (logs) | `dt-logs-evh` | `dt-logs-evh` |
-| Event Hub (events) | `dt-events-evh` | `dt-events-evh` |
+| Event Hub (logs)    | `dt-logs-evh`                                      | `dt-logs-evh`                   |
+| Event Hub (events)  | `dt-events-evh`                                    | `dt-events-evh`                 |
