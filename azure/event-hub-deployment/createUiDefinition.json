@@ -95,7 +95,7 @@
           {
             "name": "dtServicePrincipal",
             "type": "Microsoft.Common.TextBox",
-            "label": "Service Principal (object) ID",
+            "label": "Principal (object) ID",
             "toolTip": "The Object ID (not Application/Client ID) of the Dynatrace service principal (UUID format)",
             "constraints": {
               "required": true,
