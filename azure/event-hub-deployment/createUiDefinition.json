@@ -96,7 +96,7 @@
             "name": "dtServicePrincipal",
             "type": "Microsoft.Common.TextBox",
             "label": "Principal (object) ID",
-            "toolTip": "The Object ID (not Application/Client ID) of the Dynatrace service principal (UUID format)",
+            "toolTip": "The Object ID (not Application/Client ID) of the Dynatrace service principal (UUID format) from Enterprise Application",
             "constraints": {
               "required": true,
               "regex": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
