@@ -4,8 +4,8 @@ Subscription-level ARM template with an Azure Portal UI definition for deploying
 
 ## Prerequisites
 
-- An active Azure subscription with permissions to create resource groups and role assignments
-- A registered Dynatrace monitoring service principal (Object ID required)
+- An active Azure subscription with permissions to create resource groups (and role assignments, if you let the template create them)
+- A registered Dynatrace monitoring service principal (Object ID required only if you want the template to create the role assignment)
 - `Microsoft.EventHub` and `Microsoft.Authorization` resource providers registered on the subscription
 
 ## Repository Structure
@@ -23,7 +23,7 @@ For each selected Azure location, the template creates:
 2. **Event Hub Namespace** — `evhns-dt-{dtTenantId}-{location}-{evhnsSuffix}` (suffix omitted when `evhnsSuffix` is empty) with auto-inflate (Standard SKU) and zone redundancy (if available)
 3. **Event Hub for logs** — `dt-logs-evh` (configurable partition count, default: 4)
 4. **Event Hub for events** — `dt-events-evh` (1 or 2 partitions, default: 1)
-5. **RBAC Role Assignment** — [Azure Event Hubs Data Receiver](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/analytics#azure-event-hubs-data-receiver) role assigned to the Dynatrace service principal at resource group scope
+5. **RBAC Role Assignment** *(optional)* — [Azure Event Hubs Data Receiver](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/analytics#azure-event-hubs-data-receiver) role assigned to the Dynatrace service principal at resource group scope. Skipped when `dtMonitoringServicePrincipalId` is not provided; in that case you must assign the role manually after deployment.
 
 All namespaces are tagged with `dt-log-ingest-activated: {dtConfigId}` and `managed-by: dynatrace` for autodiscovery.
 
@@ -33,7 +33,7 @@ All namespaces are tagged with `dt-log-ingest-activated: {dtConfigId}` and `mana
 
 The UI definition guides you through three steps:
 
-1. **Dynatrace Configuration** — Environment ID, Monitoring Configuration ID, and Service Principal selection
+1. **Dynatrace Configuration** — Environment ID, Monitoring Configuration ID, and (optionally) Service Principal selection. Uncheck *"I have permissions to perform Azure Role Assignments"* to skip the role-assignment step if you lack the required permissions.
 2. **Event Hubs Configuration** — Location selection and configuration size preset (or custom)
 3. **Tags** — Optional custom tags per resource type
 
@@ -75,6 +75,21 @@ az deployment sub create \
                evhLogsPartitionCount=2 \
                evhEventsPartitionCount=1 \
                tags='{"cost-center": "platform-team", "environment": "production"}'
+
+# Without role assignment (skip RBAC step - assign role manually later)
+az deployment sub create \
+  --location eastus \
+  --template-file armTemplate.jsonc \
+  --parameters dtTenantId=abc12345 \
+               dtConfigId="cfc78e0e-a116-3289-bba1-ac6ad7e81c1f" \
+               locations='["eastus","westeurope"]'
+
+# Manual role assignment (run once per resource group after a deployment without dtMonitoringServicePrincipalId):
+az role assignment create \
+  --assignee-object-id "<service-principal-object-id>" \
+  --assignee-principal-type ServicePrincipal \
+  --role "Azure Event Hubs Data Receiver" \
+  --scope "/subscriptions/<subscription-id>/resourceGroups/rg-dt-<dtTenantId>-<location>"
 ```
 
 > **Note:** The `dtMonitoringServicePrincipalId` parameter requires the service principal **Object ID** (not the App/Client ID) of Enterprise Application. You can retrieve it with:
@@ -89,7 +104,7 @@ az deployment sub create \
 | `locations`                      | array  | *(required)*       | Azure locations for Event Hub namespace deployment                                                                                                                                                                               |
 | `dtTenantId`                     | string | *(required)*       | Dynatrace tenant ID used in resource naming                                                                                                                                                                                      |
 | `dtConfigId`                     | string | *(required)*       | Monitoring configuration ID for tagging and autodiscovery                                                                                                                                                                        |
-| `dtMonitoringServicePrincipalId` | string | *(required)*       | Service principal Object ID (of Enterprise Application) for RBAC assignment                                                                                                                                                      |
+| `dtMonitoringServicePrincipalId` | string | `""` *(optional)*  | Service principal Object ID (of Enterprise Application) for RBAC assignment. If empty, the role assignment step is skipped and must be performed manually after deployment.                                                      |
 | `evhnsSuffix`                    | string | *(auto-generated)* | Optional suffix appended to the Event Hub Namespace name. If not specified, a random 4-character value is generated. Pass a fixed value to target an existing namespace on re-deployment. Pass `""` to omit the suffix entirely. |
 | `skuName`                        | string | `Standard`         | Namespace SKU: Basic, Standard, or Premium                                                                                                                                                                                       |
 | `skuCapacity`                    | int    | `1`                | Baseline throughput units (1–20)                                                                                                                                                                                                 |

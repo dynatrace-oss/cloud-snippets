@@ -22,8 +22,9 @@
     },
     "dtMonitoringServicePrincipalId": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
-        "description": "Service principal Object ID for RBAC assignment."
+        "description": "Service principal Object ID for RBAC assignment. Optional - if empty, the role assignment step is skipped."
       }
     },
     "skuName": {
@@ -264,6 +265,7 @@
       }
     },
     {
+      "condition": "[not(empty(parameters('dtMonitoringServicePrincipalId')))]",
       "copy": {
         "name": "rbacAssignments",
         "count": "[length(parameters('locations'))]"
