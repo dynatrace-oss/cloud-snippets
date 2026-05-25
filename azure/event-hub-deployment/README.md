@@ -4,8 +4,8 @@ Subscription-level ARM template with an Azure Portal UI definition for deploying
 
 ## Prerequisites
 
-- An active Azure subscription with permissions to create resource groups (and role assignments, if you let the template create them)
-- A registered Dynatrace monitoring service principal (Object ID required only if you want the template to create the role assignment)
+- An active Azure subscription with permissions to create resource groups and role assignments
+- A registered Dynatrace monitoring service principal (Object ID required)
 - `Microsoft.EventHub` and `Microsoft.Authorization` resource providers registered on the subscription
 
 ## Repository Structure
@@ -104,7 +104,7 @@ az role assignment create \
 | `locations`                      | array  | *(required)*       | Azure locations for Event Hub namespace deployment                                                                                                                                                                               |
 | `dtTenantId`                     | string | *(required)*       | Dynatrace tenant ID used in resource naming                                                                                                                                                                                      |
 | `dtConfigId`                     | string | *(required)*       | Monitoring configuration ID for tagging and autodiscovery                                                                                                                                                                        |
-| `dtMonitoringServicePrincipalId` | string | `""` *(optional)*  | Service principal Object ID (of Enterprise Application) for RBAC assignment. If empty, the role assignment step is skipped and must be performed manually after deployment.                                                      |
+| `dtMonitoringServicePrincipalId` | string | `""`               | Service principal Object ID (of Enterprise Application) for RBAC assignment. If empty, the role assignment step is skipped and must be performed manually after deployment.                                                      |
 | `evhnsSuffix`                    | string | *(auto-generated)* | Optional suffix appended to the Event Hub Namespace name. If not specified, a random 4-character value is generated. Pass a fixed value to target an existing namespace on re-deployment. Pass `""` to omit the suffix entirely. |
 | `skuName`                        | string | `Standard`         | Namespace SKU: Basic, Standard, or Premium                                                                                                                                                                                       |
 | `skuCapacity`                    | int    | `1`                | Baseline throughput units (1–20)                                                                                                                                                                                                 |
