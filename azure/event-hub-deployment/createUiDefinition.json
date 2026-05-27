@@ -84,12 +84,19 @@
             }
           },
           {
+            "name": "hasRoleAssignmentPermissions",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "I have permissions to perform Azure Role Assignments",
+            "defaultValue": true,
+            "toolTip": "When enabled, the deployment grants the 'Azure Event Hubs Data Receiver' role to the Dynatrace service principal automatically. Disable if you lack Microsoft.Authorization/roleAssignments/write permissions; you will need to assign the role manually after deployment."
+          },
+          {
             "name": "dtServicePrincipalNote",
             "type": "Microsoft.Common.InfoBox",
-            "visible": true,
+            "visible": "[steps('dynatraceConfig').hasRoleAssignmentPermissions]",
             "options": {
               "icon": "Info",
-              "text": "Enter the Object ID of the service principal you used during onboarding in Dynatrace. You can find it in the Dynatrace onboarding wizard under Principal (object) ID."
+              "text": "Enter the Principal (object) ID of the service principal you used during onboarding in Dynatrace. You can find it in the Dynatrace connection Overview, or in the onboarding wizard under Principal (object) ID."
             }
           },
           {
@@ -97,10 +104,21 @@
             "type": "Microsoft.Common.TextBox",
             "label": "Principal (object) ID",
             "toolTip": "The Object ID (not Application/Client ID) of the Dynatrace service principal (UUID format) from Enterprise Application",
+            "visible": "[steps('dynatraceConfig').hasRoleAssignmentPermissions]",
             "constraints": {
               "required": true,
               "regex": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
               "validationMessage": "Must be a valid UUID (e.g., 592b6da9-9ce2-4ead-9e24-55bdae3bfaf7)"
+            }
+          },
+          {
+            "name": "dtServicePrincipalSkipWarning",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": "[not(steps('dynatraceConfig').hasRoleAssignmentPermissions)]",
+            "options": {
+              "icon": "Warning",
+              "text": "The role assignment step will be skipped. After deployment, an administrator must manually assign the 'Azure Event Hubs Data Receiver' role to the Dynatrace service principal at the resource group scope (rg-dt-<environment-id>-<location>). See: https://docs.dynatrace.com/docs/ingest-from/microsoft-azure-services/ingest-telemetry/azure-logs-and-events#azure-permissions",
+              "uri": "https://docs.dynatrace.com/docs/ingest-from/microsoft-azure-services/ingest-telemetry/azure-logs-and-events#azure-permissions"
             }
           }
         ]
@@ -331,7 +349,7 @@
       "locations": "[steps('eventHubConfig').locations]",
       "dtTenantId": "[steps('dynatraceConfig').dtTenantId]",
       "dtConfigId": "[steps('dynatraceConfig').dtConfigId]",
-      "dtMonitoringServicePrincipalId": "[steps('dynatraceConfig').dtServicePrincipal]",
+      "dtMonitoringServicePrincipalId": "[if(steps('dynatraceConfig').hasRoleAssignmentPermissions, steps('dynatraceConfig').dtServicePrincipal, '')]",
       "skuName": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"sku\":\"Basic\"},{\"config\":\"Small\",\"sku\":\"Standard\"},{\"config\":\"Medium\",\"sku\":\"Standard\"},{\"config\":\"Large\",\"sku\":\"Standard\"}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.sku)), steps('eventHubConfig').eventHubNamespace.skuName)]",
       "skuCapacity": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').eventHubNamespace.skuCapacity, 1)]",
       "maximumThroughputUnits": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"maxTU\":1},{\"config\":\"Small\",\"maxTU\":4},{\"config\":\"Medium\",\"maxTU\":16},{\"config\":\"Large\",\"maxTU\":32}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.maxTU)), steps('eventHubConfig').eventHubNamespace.maximumThroughputUnits)]",
