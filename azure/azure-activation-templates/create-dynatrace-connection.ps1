@@ -1,11 +1,11 @@
 $requiredEnvVars = @(
     'dynatraceApiKey', 
     'dynatraceTenant',
+    'dynatraceEnvironment',
     'dynatraceConfigurationId', 
     'directoryId', 
     'clientId', 
-    'clientSecret', 
-    'subscriptionId')
+    'clientSecret')
 
 foreach ($var in $requiredEnvVars) {
     if (-not (Test-Path "Env:$var")) {
@@ -15,8 +15,8 @@ foreach ($var in $requiredEnvVars) {
 
 $activationData = @{}
 
-$environment = "$($Env:dynatraceEnvironment ?? 'live')"
-$has_endpoint = "https://$Env:dynatraceTenant.$environment.dynatracelabs.com/api/v2/settings/objects?validateOnly=false&adminAccess=false"
+$has_endpoint = "https://$Env:dynatraceTenant.$Env:dynatraceEnvironment.dynatracelabs.com/api/v2/settings/objects?validateOnly=false&adminAccess=false"
+$randomString = -join ((65..90 + 97..122) | Get-Random -Count 8 | ForEach-Object { [char]$_ })
 
 $jsonBody = @"
 [
@@ -26,12 +26,11 @@ $jsonBody = @"
                 "directoryId": "$($Env:directoryId)",
                 "applicationId": "$($Env:clientId)",
                 "clientSecret": "$($Env:clientSecret)",
-                "consumers": ["DA"]
+                "consumers": ["SVC:com.dynatrace.da"]
             },
-            "name": "Dynatrace Azure Monitoring ($($Env:subscriptionId))",
+            "name": "da_azure_connection_$randomString",
             "type": "clientSecret"
         },
-        "schemaVersion": "0.0.3",
         "schemaId": "builtin:hyperscaler-authentication.connections.azure"
     }
 ]
@@ -52,7 +51,7 @@ try
 
     if ($response.StatusCode -eq 200) {
         $jsonResponse = $response.Content | ConvertFrom-Json
-        
+
         $activationData['connectionId'] = $jsonResponse[0].objectId
         Write-Output $activationData['connectionId']
     } else {
@@ -64,7 +63,7 @@ catch {
 }
 
 $extensionName = "com.dynatrace.extension.da-azure"
-$efx_endpoint = "https://$Env:dynatraceTenant.$environment.dynatracelabs.com/api/v2/extensions/$extensionName/monitoringConfigurations"
+$efx_endpoint = "https://$Env:dynatraceTenant.$Env:dynatraceEnvironment.dynatracelabs.com/api/v2/extensions/$extensionName/monitoringConfigurations"
 
 $configurationObject = $null
 
@@ -83,8 +82,8 @@ try
 
     if ($response.StatusCode -eq 200) {
         $configurationObject = $response.Content | ConvertFrom-Json
-        $configurationObject.value.azure.subscriptionFiltering = @($Env:subscriptionId)
         $configurationObject.value.azure.credentials[0].connectionId = $activationData['connectionId']
+        $configurationObject.value.azure.credentials[0] | Add-Member -NotePropertyName servicePrincipalId -NotePropertyValue $Env:clientId
         $configurationObject.value.azure.credentials[0].enabled = $true
         $configurationObject.value.enabled = $true
         $activationData['updatedMonitoringConfigurationJson'] = $configurationObject | ConvertTo-Json -Depth 100

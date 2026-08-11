@@ -1,0 +1,367 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+  "handler": "Microsoft.Azure.CreateUIDef",
+  "version": "0.1.2-preview",
+  "parameters": {
+    "config": {
+      "isWizard": false,
+      "basics": {
+        "description": "Deploy Event Hub namespaces across multiple Azure locations for Dynatrace log and event ingestion.",
+        "subscription": {
+          "resourceProviders": [
+            "Microsoft.EventHub",
+            "Microsoft.Authorization"
+          ]
+        },
+        "resourceGroup": {
+          "visible": false
+        },
+        "location": {
+          "visible": true,
+          "label": "Location",
+          "toolTip": "Location for storing deployment metadata only. This is not used for Event Hub deployment. Select deployment locations in the next step."
+        }
+      }
+    },
+    "basics": [
+      {
+        "name": "locationsApi",
+        "type": "Microsoft.Solutions.ArmApiControl",
+        "request": {
+          "method": "GET",
+          "path": "[concat(subscription().id, '/locations?api-version=2022-12-01')]"
+        }
+      },
+      {
+        "name": "resourcesProvidersApi",
+        "type": "Microsoft.Solutions.ArmApiControl",
+        "request": {
+          "method": "GET",
+          "path": "[concat(subscription().id, '/providers/Microsoft.Resources?api-version=2021-04-01')]"
+        }
+      },
+      {
+        "name": "eventHubsProvidersApi",
+        "type": "Microsoft.Solutions.ArmApiControl",
+        "request": {
+          "method": "GET",
+          "path": "[concat(subscription().id, '/providers/Microsoft.EventHub?api-version=2021-04-01')]"
+        }
+      }
+    ],
+    "steps": [
+      {
+        "name": "dynatraceConfig",
+        "label": "Dynatrace Configuration",
+        "elements": [
+          {
+            "name": "dynatraceInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "Provide your Dynatrace environment and monitoring configuration details. Select the service principal used for Dynatrace monitoring"
+            }
+          },
+          {
+            "name": "dtTenantId",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Dynatrace Environment ID",
+            "toolTip": "Your Dynatrace environment identifier (e.g. abc1234d)",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "dtConfigId",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Monitoring Configuration ID",
+            "toolTip": "Dynatrace monitoring configuration ID (UUID format)",
+            "constraints": {
+              "required": true,
+              "regex": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+              "validationMessage": "Must be a valid UUID (e.g., 592b6da9-9ce2-4ead-9e24-55bdae3bfaf7)"
+            }
+          },
+          {
+            "name": "hasRoleAssignmentPermissions",
+            "type": "Microsoft.Common.CheckBox",
+            "label": "I have permissions to perform Azure Role Assignments",
+            "defaultValue": true,
+            "toolTip": "When enabled, the deployment grants the 'Azure Event Hubs Data Receiver' role to the Dynatrace service principal automatically. Disable if you lack Microsoft.Authorization/roleAssignments/write permissions; you will need to assign the role manually after deployment."
+          },
+          {
+            "name": "dtServicePrincipalNote",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": "[steps('dynatraceConfig').hasRoleAssignmentPermissions]",
+            "options": {
+              "icon": "Info",
+              "text": "Enter the Principal (object) ID of the service principal you used during onboarding in Dynatrace. You can find it in the Dynatrace connection Overview, or in the onboarding wizard under Principal (object) ID."
+            }
+          },
+          {
+            "name": "dtServicePrincipal",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Principal (object) ID",
+            "toolTip": "The Object ID (not Application/Client ID) of the Dynatrace service principal (UUID format) from Enterprise Application",
+            "visible": "[steps('dynatraceConfig').hasRoleAssignmentPermissions]",
+            "constraints": {
+              "required": true,
+              "regex": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+              "validationMessage": "Must be a valid UUID (e.g., 592b6da9-9ce2-4ead-9e24-55bdae3bfaf7)"
+            }
+          },
+          {
+            "name": "dtServicePrincipalSkipWarning",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": "[not(steps('dynatraceConfig').hasRoleAssignmentPermissions)]",
+            "options": {
+              "icon": "Warning",
+              "text": "The role assignment step will be skipped. After deployment, an administrator must manually assign the 'Azure Event Hubs Data Receiver' role to the Dynatrace service principal at the resource group scope (rg-dt-<environment-id>-<location>). See: https://docs.dynatrace.com/docs/ingest-from/microsoft-azure-services/ingest-telemetry/azure-logs-and-events#azure-permissions",
+              "uri": "https://docs.dynatrace.com/docs/ingest-from/microsoft-azure-services/ingest-telemetry/azure-logs-and-events#azure-permissions"
+            }
+          }
+        ]
+      },
+      {
+        "name": "eventHubConfig",
+        "label": "Event Hubs Configuration",
+        "elements": [
+          {
+            "name": "eventHubInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "Please, select the Azure locations where Event Hub namespaces should be deployed and choose a configuration size that matches your workload requirements."
+            }
+          },
+          {
+            "name": "locations",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Locations",
+            "toolTip": "Select one or more locations to deploy Event Hub Namespaces.",
+            "multiselect": true,
+            "filter": true,
+            "defaultValue": "parse('[]')",
+            "constraints": {
+              "allowedValues": "[map(filter(basics('locationsApi').value, (location) => and(contains(first(map(filter(basics('resourcesProvidersApi').resourceTypes, (rt) => equals(rt.resourceType, 'resourceGroups')), (rt) => rt.locations)), location.displayName), contains(first(map(filter(basics('eventHubsProvidersApi').resourceTypes, (rt) => equals(rt.resourceType, 'namespaces')), (rt) => rt.locations)), location.displayName))), (item) => parse(concat('{\"label\":\"', item.displayName, '\",\"value\":\"', item.name, '\"}')))]",
+              "required": true
+            },
+            "visible": true
+          },
+          {
+            "name": "configurationSize",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Configuration Size",
+            "toolTip": "Select a preset configuration or choose Custom for manual configuration",
+            "defaultValue": "Small (Max Throughput: 14.4 GB/hour)",
+            "constraints": {
+              "required": true,
+              "allowedValues": [
+                {
+                  "label": "Dev/Test (Max Throughput: 3.6 GB/hour)",
+                  "value": "DevTest"
+                },
+                {
+                  "label": "Small (Max Throughput: 14.4 GB/hour)",
+                  "value": "Small"
+                },
+                {
+                  "label": "Medium (Max Throughput: 57.6 GB/hour)",
+                  "value": "Medium"
+                },
+                {
+                  "label": "Large (Max Throughput: 115.2 GB/hour)",
+                  "value": "Large"
+                },
+                {
+                  "label": "Custom",
+                  "value": "Custom"
+                }
+              ]
+            }
+          },
+          {
+            "name": "eventHubNamespace",
+            "type": "Microsoft.Common.Section",
+            "label": "Event Hub Namespace Configuration",
+            "visible": "[equals(steps('eventHubConfig').configurationSize, 'Custom')]",
+            "elements": [
+              {
+                "name": "skuName",
+                "type": "Microsoft.Common.DropDown",
+                "label": "SKU",
+                "toolTip": "Event Hub namespace pricing tier",
+                "defaultValue": "Standard",
+                "constraints": {
+                  "required": true,
+                  "allowedValues": [
+                    {
+                      "label": "Basic",
+                      "value": "Basic"
+                    },
+                    {
+                      "label": "Standard",
+                      "value": "Standard"
+                    },
+                    {
+                      "label": "Premium",
+                      "value": "Premium"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "skuCapacity",
+                "type": "Microsoft.Common.Slider",
+                "label": "Throughput Units (Baseline)",
+                "min": 1,
+                "max": 20,
+                "defaultValue": 1,
+                "showStepMarkers": false,
+                "toolTip": "Minimum/baseline throughput units (1-20). This is the starting capacity before auto-inflate.",
+                "constraints": {
+                  "required": true
+                }
+              },
+              {
+                "name": "maximumThroughputUnits",
+                "type": "Microsoft.Common.Slider",
+                "label": "Maximum Throughput Units (Auto-inflate)",
+                "min": "[steps('eventHubConfig').eventHubNamespace.skuCapacity]",
+                "max": 40,
+                "defaultValue": 10,
+                "showStepMarkers": false,
+                "toolTip": "Maximum throughput units for auto-inflate scaling (1-40). Must be greater than or equal to baseline throughput units.",
+                "constraints": {
+                  "required": true
+                },
+                "visible": "[equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Standard')]"
+              }
+            ]
+          },
+
+          {
+            "name": "logsEventHub",
+            "type": "Microsoft.Common.Section",
+            "label": "Logs Event Hub Configuration",
+            "visible": "[equals(steps('eventHubConfig').configurationSize, 'Custom')]",
+            "elements": [
+              {
+                "name": "partitionCount",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Partition Count",
+                "defaultValue": "4",
+                "toolTip": "Number of partitions (1-32)",
+                "constraints": {
+                  "required": true,
+                  "regex": "^([1-9]|[1-2][0-9]|3[0-2])$",
+                  "validationMessage": "Must be a number between 1 and 32"
+                }
+              },
+              {
+                "name": "retentionInDays",
+                "type": "Microsoft.Common.Slider",
+                "label": "Message Retention (days)",
+                "min": 1,
+                "max": 7,
+                "defaultValue": 1,
+                "showStepMarkers": true,
+                "toolTip": "Number of days to retain log messages (1-7)",
+                "constraints": {
+                  "required": true
+                },
+                "visible": "[not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))]"
+              }
+            ]
+          },
+          {
+            "name": "eventsEventHub",
+            "type": "Microsoft.Common.Section",
+            "label": "Events Event Hub Configuration",
+            "visible": "[equals(steps('eventHubConfig').configurationSize, 'Custom')]",
+            "elements": [
+              {
+                "name": "partitionCount",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Partition Count",
+                "toolTip": "Number of partitions (1 or 2)",
+                "defaultValue": "1",
+                "constraints": {
+                  "required": true,
+                  "allowedValues": [
+                    {
+                      "label": "1",
+                      "value": "1"
+                    },
+                    {
+                      "label": "2",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "retentionInDays",
+                "type": "Microsoft.Common.Slider",
+                "label": "Message Retention (days)",
+                "min": 1,
+                "max": 7,
+                "defaultValue": 1,
+                "showStepMarkers": true,
+                "toolTip": "Number of days to retain event messages (1-7)",
+                "constraints": {
+                  "required": true
+                },
+                "visible": "[not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "tags",
+        "label": "Tags",
+        "elements": [
+          {
+            "name": "tagsInfo",
+            "type": "Microsoft.Common.InfoBox",
+            "visible": true,
+            "options": {
+              "icon": "Info",
+              "text": "Optional: Add custom tags to all deployed resources. Standard tags (managed-by, dt-log-ingest-activated) are added automatically."
+            }
+          },
+          {
+            "name": "customTags",
+            "type": "Microsoft.Common.TagsByResource",
+            "toolTip": "Add custom tags to resources",
+            "resources": [
+              "Microsoft.EventHub/namespaces",
+              "Microsoft.Resources/resourceGroups"
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "locations": "[steps('eventHubConfig').locations]",
+      "dtTenantId": "[steps('dynatraceConfig').dtTenantId]",
+      "dtConfigId": "[steps('dynatraceConfig').dtConfigId]",
+      "dtMonitoringServicePrincipalId": "[if(steps('dynatraceConfig').hasRoleAssignmentPermissions, steps('dynatraceConfig').dtServicePrincipal, '')]",
+      "skuName": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"sku\":\"Basic\"},{\"config\":\"Small\",\"sku\":\"Standard\"},{\"config\":\"Medium\",\"sku\":\"Standard\"},{\"config\":\"Large\",\"sku\":\"Standard\"}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.sku)), steps('eventHubConfig').eventHubNamespace.skuName)]",
+      "skuCapacity": "[if(equals(steps('eventHubConfig').configurationSize, 'Custom'), steps('eventHubConfig').eventHubNamespace.skuCapacity, 1)]",
+      "maximumThroughputUnits": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"maxTU\":1},{\"config\":\"Small\",\"maxTU\":4},{\"config\":\"Medium\",\"maxTU\":16},{\"config\":\"Large\",\"maxTU\":32}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.maxTU)), steps('eventHubConfig').eventHubNamespace.maximumThroughputUnits)]",
+      "evhLogsPartitionCount": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"partitions\":1},{\"config\":\"Small\",\"partitions\":4},{\"config\":\"Medium\",\"partitions\":16},{\"config\":\"Large\",\"partitions\":32}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.partitions)), int(steps('eventHubConfig').logsEventHub.partitionCount))]",
+      "evhLogsRetentionInDays": "[if(and(equals(steps('eventHubConfig').configurationSize, 'Custom'), not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))), steps('eventHubConfig').logsEventHub.retentionInDays, 1)]",
+      "evhEventsPartitionCount": "[coalesce(first(map(filter(parse('[{\"config\":\"DevTest\",\"partitions\":1},{\"config\":\"Small\",\"partitions\":1},{\"config\":\"Medium\",\"partitions\":1},{\"config\":\"Large\",\"partitions\":2}]'), (item) => equals(item.config, steps('eventHubConfig').configurationSize)), (item) => item.partitions)), int(steps('eventHubConfig').eventsEventHub.partitionCount))]",
+      "evhEventsRetentionInDays": "[if(and(equals(steps('eventHubConfig').configurationSize, 'Custom'), not(equals(steps('eventHubConfig').eventHubNamespace.skuName, 'Basic'))), steps('eventHubConfig').eventsEventHub.retentionInDays, 1)]",
+      "tags": "[steps('tags').customTags]"
+    },
+    "resourceTypes": [
+      "Microsoft.EventHub/namespaces",
+      "Microsoft.Resources/resourceGroups"
+    ]
+  }
+}

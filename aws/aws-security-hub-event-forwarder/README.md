@@ -1,4 +1,7 @@
 # AWS Security Hub event forwarder
+Note: Since the introduction of the Grail security table, up-to-date artifacts are now delivered directly in-product through new integrations.
+As a result, the artifacts in this repository are no longer maintained and will become outdated.
+For further details, see the [Grail security table migration guide](https://docs.dynatrace.com/docs/secure/threat-observability/migration).
 
 This folder contains an [AWS Cloud Formation](https://aws.amazon.com/cloudformation/) template, which sets up the necessary resources in AWS to forward AWS Security Hub to the Dynatrace OpenPipeline security event ingest endpoint.
 

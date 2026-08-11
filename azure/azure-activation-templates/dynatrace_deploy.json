@@ -23,6 +23,9 @@
     "dynatraceTenant": {
       "type": "string"
     },
+    "dynatraceEnvironment": {
+      "type": "string"
+    },
     "dynatraceIntegrationName": {
       "type": "string"
     },
@@ -67,20 +70,16 @@
       "properties": {
         "environmentVariables": [
           {
-            "name": "subscriptionId",
-            "value": "[parameters('monitoredSubscription')]"
-          },
-          {
             "name": "dynatraceTenant",
             "value": "[parameters('dynatraceTenant')]"
           },
           {
             "name": "dynatraceApiKey",
-            "value": "[parameters('dynatraceApiKey')]"
+            "secureValue": "[parameters('dynatraceApiKey')]"
           },
           {
             "name": "dynatraceEnvironment",
-            "value": "dev"
+            "value": "[parameters('dynatraceEnvironment')]"
           },
           {
             "name": "dynatraceConfigurationId",
