@@ -149,7 +149,6 @@ Resources:
             Principal:
               AWS:
                 - !Sub 'arn:aws:iam::${ActiveGateAccountID}:role/${ActiveGateRoleName}'
-                - '509560245411' # Dynatrace monitoring account ID
             Action: sts:AssumeRole
             Condition:
               StringEquals:
