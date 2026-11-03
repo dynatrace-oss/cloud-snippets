@@ -266,7 +266,7 @@
                 "label": "Message Retention (days)",
                 "min": 1,
                 "max": 7,
-                "defaultValue": 1,
+                "defaultValue": 3,
                 "showStepMarkers": true,
                 "toolTip": "Number of days to retain log messages (1-7)",
                 "constraints": {
@@ -308,7 +308,7 @@
                 "label": "Message Retention (days)",
                 "min": 1,
                 "max": 7,
-                "defaultValue": 1,
+                "defaultValue": 3,
                 "showStepMarkers": true,
                 "toolTip": "Number of days to retain event messages (1-7)",
                 "constraints": {

@@ -68,7 +68,7 @@
     },
     "evhLogsRetentionInDays": {
       "type": "int",
-      "defaultValue": 1,
+      "defaultValue": 3,
       "minValue": 1,
       "maxValue": 7,
       "metadata": {
@@ -86,7 +86,7 @@
     },
     "evhEventsRetentionInDays": {
       "type": "int",
-      "defaultValue": 1,
+      "defaultValue": 3,
       "minValue": 1,
       "maxValue": 7,
       "metadata": {
